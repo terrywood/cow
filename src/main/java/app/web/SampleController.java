@@ -17,12 +17,15 @@
 package app.web;
 
 
+import app.entity.AccountData;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,22 +38,23 @@ public class SampleController {
 */
 
 	@RequestMapping("/hi")
+	@ResponseBody
 	@Transactional(readOnly = true)
 	public String helloWorld() {
 		return "hello";
 	}
 
 
-	@RequestMapping("/map")
+	//@RequestMapping("/map")
+	@RequestMapping(value="/map", method= RequestMethod.GET, produces="application/json")
 	@ResponseBody
 	@Transactional(readOnly = true)
-	public Map map() {
-
-		Map<String,String> map = new HashMap<>();
-		map.put("A","Wu");
-		map.put("B","");
-		map.put("C",null);
-		return map;
+	public AccountData map() {
+		AccountData data = new AccountData();
+		data.setBackgroundUrl("back url");
+		data.setTitle("title000");
+		data.setToday(new Date());
+		return data;
 	}
 
 }
