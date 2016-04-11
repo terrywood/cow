@@ -17,17 +17,14 @@
 package app.web;
 
 
-import app.entity.AccountData;
+import app.entity.HistoryData;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 @Controller
 public class SampleController {
@@ -49,11 +46,10 @@ public class SampleController {
 	@RequestMapping(value="/map", method= RequestMethod.GET, produces="application/json")
 	@ResponseBody
 	@Transactional(readOnly = true)
-	public AccountData map() {
-		AccountData data = new AccountData();
-		data.setBackgroundUrl("back url");
-		data.setTitle("title000");
-		data.setToday(new Date());
+	public HistoryData map() {
+		HistoryData data = new HistoryData();
+		data.setDelegateID(10l);
+		data.setAddTime(new Date());
 		return data;
 	}
 

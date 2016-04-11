@@ -39,13 +39,10 @@ public class HistoryData {
     @LastModifiedDate
     @Column(name = "last_update_time")
     private Date lastUpdateTime;
-    @JsonIgnore
-    @CreatedDate
-    @Column(name = "create_time")
-    private Date createTime;
+
     @PrePersist
     void prePersist(){
-        this.setCreateTime( new Date() );
+        this.setLastUpdateTime( new Date() );
     }
     @PreUpdate
     void preUpdate(){
