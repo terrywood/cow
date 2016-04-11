@@ -1,6 +1,5 @@
 package app;
 
-import app.entity.Customer;
 import app.service.CustomerRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
