@@ -1,10 +1,10 @@
 package app.service;
 
 import app.entity.HistoryData;
-import app.entity.StockListData;
+import app.entity.Trader;
 import org.springframework.data.repository.CrudRepository;
 
-public interface HistoryDataRepository extends CrudRepository<HistoryData, Long> {
+public interface TraderRepository extends CrudRepository<Trader, Long> {
 
   //  List<AccountData> findByLastName(String lastName);
 }

@@ -4,15 +4,17 @@ import app.bean.Account;
 import app.bean.StockList;
 import app.entity.HistoryData;
 import app.entity.StockListData;
+import app.entity.Trader;
 import app.service.HistoryDataRepository;
 import app.service.StockListRepository;
+import app.service.TraderRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
@@ -21,39 +23,53 @@ import java.util.concurrent.ConcurrentMap;
 
 @Component
 public class ScheduledTasks {
-
-
     ConcurrentMap<Long, Date> map = new ConcurrentHashMap();
-
     @Autowired
     ObjectMapper jacksonObjectMapper;
     @Autowired
     StockListRepository stockListRepository;
     @Autowired
     HistoryDataRepository historyDataRepository;
-
+    @Autowired
+    TraderRepository traderRepository;
     //@Scheduled(cron = "0 0/5 9,16 * * ?")
-
-
      boolean debug = true;
     /*guo jin*/
     // String  userId = "605166";
     /*terry*/
-    String userId = "607955";
+    //String userId = "607955";
 
-    public void stockListItem(Long listId) throws IOException {
-        URL url = new URL("https://swww.niuguwang.com/tr/201411/stocklistitem.ashx?id=" + listId + "&s=xiaomi&version=3.4.4&packtype=1");
+    //阿勤
+    String userId = "773183";
+
+    public void stockListItem(StockListData stockList) throws IOException {
+        URL url = new URL("https://swww.niuguwang.com/tr/201411/stocklistitem.ashx?id=" + stockList.getListID() + "&s=xiaomi&version=3.4.4&packtype=1");
         StockList bean = jacksonObjectMapper.readValue(url, StockList.class);
         for (HistoryData data : bean.getHistoryData()) {
-            HistoryData historyData = historyDataRepository.findOne(data.getDelegateID());
-            if (historyData == null) {
-                historyDataRepository.save(data);
+            if (!historyDataRepository.exists(data.getDelegateID())) {
                 //TODO call 券商API
+                String type = data.getType();
+                Float price = null;
+                String result = null;
+                int amount =100;
+                if(type.equals("1")){
+                     price = data.getTransactionUnitPrice()*1.025f;
+                     result = String .format("%.2f",price);
+                }else{
+                   price = data.getTransactionUnitPrice()*0.97f;
+                   result = String .format("%.2f",price);
+                }
+                Trader trader = new Trader();
+                trader.setType(type);
+                trader.setDelegateID(data.getDelegateID());
+                trader.setTransactionAmount(amount);
+                trader.setTransactionUnitPrice(Float.valueOf(result));
+                trader.setCode(stockList.getStockCode());
+                historyDataRepository.save(data);
+                traderRepository.save(trader);
             }
         }
 
-
-        //historyDataRepository
     }
 
     /* ObjectMapper mapper = new ObjectMapper();
@@ -61,8 +77,6 @@ public class ScheduledTasks {
        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
        Account user = mapper.readValue(url, Account.class);*/
-
-
     @Scheduled(fixedDelay = 1)
     public void init() throws IOException {
         if(isTradeDayTimeByMarket()){
@@ -76,15 +90,15 @@ public class ScheduledTasks {
                     Date date = map.get(id);
                     Date lastTrading = data.getLastTradingTime();
                     if (!date.equals(lastTrading)) {
+                        stockListItem(data);
                         stockListRepository.save(data);
-                        stockListItem(id);
                         map.put(id, lastTrading);
                     }/* else {
                         System.out.println("no update by "+userId);
                     }*/
                 } else {
+                    stockListItem(data);
                     stockListRepository.save(data);
-                    stockListItem(id);
                     Date lastTrading = data.getLastTradingTime();
                     map.put(id, lastTrading);
                 }
@@ -102,7 +116,7 @@ public class ScheduledTasks {
     }
 
     public boolean isTradeDayTimeByMarket() {
-        if(debug)return true;
+        //if(debug)return true;
         Calendar cal = Calendar.getInstance();
         int hour = cal.get(Calendar.HOUR_OF_DAY);
         int minute = cal.get(Calendar.MINUTE);

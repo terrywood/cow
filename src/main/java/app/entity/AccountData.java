@@ -10,7 +10,7 @@ import java.util.Date;
 
 @Entity
 @Data
-public class Customer {
+public class AccountData {
     @Id
     @JsonProperty(value = "AccountID")
     private Long accountID;
@@ -37,10 +37,10 @@ public class Customer {
     private Float monthTradeNumber;
     @JsonProperty(value = "AvaliableAsset")
     private Float avaliableAsset;
-    @JsonProperty(value = "FirstTradingTime")
+    @JsonProperty(value = "FirstTradeTime")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh" , timezone="GMT+8")
     public Date firstTradingTime;
-    @JsonProperty(value = "LastTradingTime")
+    @JsonProperty(value = "LastTradeTime")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh" , timezone="GMT+8")
     public Date lastTradingTime;
 }

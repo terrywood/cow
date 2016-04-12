@@ -24,8 +24,9 @@ public class HistoryData {
     @JsonProperty(value = "AddTime")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh" , timezone="GMT+8")
     public Date addTime;
-    @JsonProperty(value = "ClearFlag")
-    public String clearFlag;
+
+/*    @JsonProperty(value = "ClearFlag")
+    public String clearFlag;*/
 
     @JsonProperty(value = "Type")
     public String type; // 1 buy ; 2 sell

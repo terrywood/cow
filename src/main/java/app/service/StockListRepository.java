@@ -5,5 +5,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface StockListRepository extends CrudRepository<StockListData, Long> {
 
-  //  List<Customer> findByLastName(String lastName);
+  //  List<AccountData> findByLastName(String lastName);
 }

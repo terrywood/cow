@@ -1,1 +1,1 @@
-java -jar target/cow-1.0-SNAPSHOT.jar
+java -jar target/cow-1.0.jar
