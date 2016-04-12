@@ -18,6 +18,8 @@ package app.web;
 
 
 import app.entity.HistoryData;
+import app.service.TraderSessionService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,19 +30,16 @@ import java.util.Date;
 
 @Controller
 public class SampleController {
-
-/*
 	@Autowired
-	private CityService cityService;
-*/
-
+	private TraderSessionService traderSessionService;
 	@RequestMapping("/hi")
 	@ResponseBody
 	@Transactional(readOnly = true)
 	public String helloWorld() {
+        System.out.println(traderSessionService.getSession());
 		return "hello";
 	}
-
+/*
 
 	//@RequestMapping("/map")
 	@RequestMapping(value="/map", method= RequestMethod.GET, produces="application/json")
@@ -52,5 +51,5 @@ public class SampleController {
 		data.setAddTime(new Date());
 		return data;
 	}
-
+*/
 }
