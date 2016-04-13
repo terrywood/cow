@@ -15,13 +15,14 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Data
 public class TraderSession {
-
     @Id
-    @GeneratedValue(strategy = IDENTITY)
-    private Long id;
-
     private String sid;
+    @Column(length = 500)
+    private String cookie;
+    private String szAccount;
+    private String shAccount;
 
+/*
     @LastModifiedDate
     @Column(name = "last_update_time")
     private Date lastUpdateTime;
@@ -33,7 +34,5 @@ public class TraderSession {
     @PreUpdate
     void preUpdate(){
         this.setLastUpdateTime( new Date() );
-    }
-
-
+    }*/
 }

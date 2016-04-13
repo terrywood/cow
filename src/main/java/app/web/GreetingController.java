@@ -28,12 +28,14 @@ public class GreetingController {
     @RequestMapping("/save")
     public String session(
             @ModelAttribute TraderSession entity) {
+        entity.setShAccount("A471547189");
+        entity.setSzAccount("0159230750 ");
         traderSessionService.save(entity);
         return "redirect:index";
     }
 
     @RequestMapping("/delete")
-    public String delete(@RequestParam("id") Long id) {
+    public String delete(@RequestParam("id") String id) {
         traderSessionService.delete(id);
         return "redirect:index";
     }

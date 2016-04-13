@@ -18,7 +18,8 @@ public class StockListData {
     @Id
     @JsonProperty(value = "ListID")
     public Long listID;
-
+    @JsonProperty(value = "Market")
+    public String market; //1 shanhai  2 shenzhen
     @JsonProperty(value = "AccountID")
     public String accountID;
     @JsonProperty(value = "ActionAmount")

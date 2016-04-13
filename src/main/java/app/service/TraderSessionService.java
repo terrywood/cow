@@ -13,30 +13,21 @@ import org.springframework.stereotype.Service;
 @Service
 @CacheConfig(cacheNames = "traderSession")
 public class TraderSessionService {
-
     @Autowired
     TraderSessionRepository traderSessionRepository;
-
     @Cacheable
-    public String getSession(){
-        System.out.println("getSession function");
-        TraderSession session = traderSessionRepository.findAll().iterator().next();
-        return session.getSid();
+    public TraderSession getSession(){
+        return traderSessionRepository.findAll().iterator().next();
     }
-
     public Iterable<TraderSession> findAll(){
-        System.out.println("findAll function");
         return traderSessionRepository.findAll();
     }
-
-    @CacheEvict
+    @CacheEvict(allEntries = true)
     public void save(TraderSession entity){
-        System.out.println("save function");
         traderSessionRepository.save(entity);
     }
-    @CacheEvict
-    public void delete(Long id){
-        System.out.println("delete function");
+    @CacheEvict(allEntries = true)
+    public void delete(String id){
         traderSessionRepository.delete(id);
     }
 }

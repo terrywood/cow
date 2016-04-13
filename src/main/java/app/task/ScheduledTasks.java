@@ -5,10 +5,11 @@ import app.bean.StockList;
 import app.entity.HistoryData;
 import app.entity.StockListData;
 import app.entity.Trader;
+import app.entity.TraderSession;
 import app.service.HistoryDataRepository;
 import app.service.StockListRepository;
 import app.service.TraderRepository;
-import app.service.TraderSessionRepository;
+import app.service.TraderSessionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,10 +17,12 @@ import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.math.BigDecimal;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -35,6 +38,8 @@ public class ScheduledTasks {
     HistoryDataRepository historyDataRepository;
     @Autowired
     TraderRepository traderRepository;
+    @Autowired
+    TraderSessionService traderSessionService;
 
    /*
      @Scheduled(cron = "0 0/5 9,16 * * ?")
@@ -42,14 +47,52 @@ public class ScheduledTasks {
     /*guo jin*/
     // String  userId = "605166";
     /*terry*/
-    //String userId = "607955";
+    String userId = "607955";
 
     //阿勤
-    String userId = "773183";
+    //String userId = "773183";
 
-    public void trading (String code, Integer amount,String price){
+    public void trading (String market,Long id,String code, Integer amount,String price,String type){
+        TraderSession entity = traderSessionService.getSession();
+        //https://etrade.gf.com.cn/entry?classname=com.gf.etrade.control.StockUF2Control&method=entrust&dse_sessionId=A084EE8300CE52072EA3FEE36654ABD8
+       String account = null;
+       if(market.equals("2")){
+           account = entity.getSzAccount();
+       }else {
+           account = entity.getShAccount();
+       }
 
+     /*   String httpUrl ="https://etrade.gf.com.cn/entry?classname=com.gf.etrade.control.StockUF2Control&method=entrust&dse_sessionId="+entity.getSid();
+        try {
+            URL url = new URL(httpUrl);
+            HttpURLConnection connection = (HttpURLConnection) url .openConnection();
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Cookie",  entity.getCookie());
+            StringBuffer params = new StringBuffer();
+            params.append("dse_sessionId").append("=").append(entity.getSid())
+                    .append("&").append("stock_code").append("=").append(code)
+                    .append("&").append("exchange_type").append("=").append(market)
+                    .append("&").append("stock_account").append("=").append(account)
+                    .append("&").append("entrust_amount").append("=").append(amount)
+                    .append("&").append("entrust_price").append("=").append(price)
+                    .append("&").append("entrust_prop").append("=").append("0")
+                    .append("&").append("entrust_bs").append("=").append(type);
+            byte[] bytes = params.toString().getBytes();
+            connection.getOutputStream().write(bytes);
+            connection.connect();
+           // InputStream inStream=connection.getInputStream();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
 
+        Trader trader = new Trader();
+        trader.setType(type);
+        trader.setDelegateID(id);
+        trader.setTransactionAmount(amount);
+        trader.setTransactionUnitPrice(Float.valueOf(price));
+        trader.setCode(code);
+        traderRepository.save(trader);
     }
 
 
@@ -58,7 +101,6 @@ public class ScheduledTasks {
         StockList bean = jacksonObjectMapper.readValue(url, StockList.class);
         for (HistoryData data : bean.getHistoryData()) {
             if (!historyDataRepository.exists(data.getDelegateID())) {
-                //TODO call 券商API
                 String type = data.getType();
                 Float price = null;
                 String result = null;
@@ -70,14 +112,10 @@ public class ScheduledTasks {
                    price = data.getTransactionUnitPrice()*0.97f;
                    result = String .format("%.2f",price);
                 }
-                Trader trader = new Trader();
-                trader.setType(type);
-                trader.setDelegateID(data.getDelegateID());
-                trader.setTransactionAmount(amount);
-                trader.setTransactionUnitPrice(Float.valueOf(result));
-                trader.setCode(stockList.getStockCode());
+                //call 券商API
+                trading(stockList.getMarket(),data.getDelegateID() ,stockList.getStockCode(),amount,result,type);
                 historyDataRepository.save(data);
-                traderRepository.save(trader);
+
             }
         }
 
@@ -118,9 +156,25 @@ public class ScheduledTasks {
             }
            // System.out.println("use [" + (times - System.currentTimeMillis()) + "] ms");
         }else{
-            System.out.println(new Date() + "-----------------no  trade Day");
+            //System.out.println(new Date() + "-----------------no  trade Day");
+            TraderSession entity = traderSessionService.getSession();
+            long dc = System.currentTimeMillis()/100l;
+            String httpUrl ="https://etrade.gf.com.cn/entry?classname=com.gf.etrade.control.StockUF2Control&method=queryFund&dse_sessionId="+entity.getSid()+"&_dc="+dc;
             try {
-                Thread.sleep(10*60*1000l); //sleep 10 min
+                URL url = new URL(httpUrl);
+                HttpURLConnection connection = (HttpURLConnection) url .openConnection();
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("Cookie",  entity.getCookie());
+                connection.connect();
+                // String result = IOUtils.toString(connection.getInputStream(), Consts.UTF_8);
+                Map map = jacksonObjectMapper.readValue(connection.getInputStream(), Map.class);
+                System.out.println(map);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                Thread.sleep(5*60*1000l); //sleep 5 min
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
