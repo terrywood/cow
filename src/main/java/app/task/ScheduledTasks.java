@@ -12,21 +12,13 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-import org.thymeleaf.util.DateUtils;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 @Component
 //@Transactional
@@ -58,6 +50,7 @@ public class ScheduledTasks {
     public void trading(String market, Long id, String code, Integer amount, String price, String type, Boolean fast) {
         if (!traderService.exists(id)) {
             TraderSession entity = traderSessionService.getSession();
+
             String account = null;
             if (market.equals("2")) {
                 account = entity.getSzAccount();
@@ -136,14 +129,17 @@ public class ScheduledTasks {
        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
        Account user = mapper.readValue(url, Account.class);*/
 
-
-    @Scheduled(fixedDelay = 6000)
+/*
+    @Scheduled(cron = "0/1 * * * * ?")
     public void connectGf() {
-        TraderSession entity = traderSessionService.getSession();
+        System.out.println("run connectGf");
+        //TraderSession entity = traderSessionService.getSession();
+        TraderSession entity = new TraderSession();
+       entity.setCookie("name=value; JSESSIONID=7FBD68852BD89E79C5D1102E2B8B64F0; dse_sessionId=64D3943AF312E53AC58207CC87615941; userId=J*1C*8F*106*C1*F1*28*C6r*96k1p*B3*BBG*97*883*91G*16bw*22*A05*A8*CCL8G*97*883*91G*16bw*22*A05*A8*CCL8G*97*883*91G*16bw*22*A05*A8*CCL8*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00");
+        entity.setSid("64D3943AF312E53AC58207CC87615941");
         if (entity != null) {
-            long dc = System.currentTimeMillis() / 100l;
-            String httpUrl = "https://etrade.gf.com.cn/entry?classname=com.gf.etrade.control.StockUF2Control&method=queryFund&dse_sessionId=" + entity.getSid() + "&_dc=" + dc;
-            try {
+            String httpUrl ="https://etrade.gf.com.cn/entry?classname=com.gf.etrade.control.StockUF2Control&method=queryFund&_dc="+System.currentTimeMillis()+"&dse_sessionId="+entity.getSid();
+               try {
                 URL url = new URL(httpUrl);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
@@ -156,7 +152,9 @@ public class ScheduledTasks {
                 e.printStackTrace();
             }
         }
-    }
+    }*/
+
+
 
     @Scheduled(fixedDelay = 1)
     public void init() {
@@ -168,7 +166,8 @@ public class ScheduledTasks {
                 Account bean = jacksonObjectMapper.readValue(url, Account.class);
                 //List list = bean.getStockListData();
                 for (DelegateData data : bean.getDelegateData()) {
-                    trading(data.getMarket(), data.getDelegateID(), data.getStockCode(), data.getDelegateAmount(), data.getDelegateUnitPrice(), data.getDelegateType(), true);
+                    int amount =100;
+                    trading(data.getMarket(), data.getDelegateID(), data.getStockCode(), amount, data.getDelegateUnitPrice(), data.getDelegateType(), true);
                 }
                 //handle clear stock
                 List<StockListData> list = stockListService.findByAccountID(userId);
@@ -220,9 +219,10 @@ public class ScheduledTasks {
             }
 
         } else {
+
             System.out.println(new Date() + "----------------- is not trade Day");
             try {
-                Thread.sleep(60 * 1000l); //sleep 5 min
+                Thread.sleep(1000*60*10); //sleep 10 min
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -231,14 +231,14 @@ public class ScheduledTasks {
     }
 
     public boolean isTradeDayTimeByMarket() {
-        if (1 == 1) {
+     /*   if (1 == 1) {
             try {
                 Thread.sleep(2000); //sleep 5 sec
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             return true;
-        }
+        }*/
         Calendar cal = Calendar.getInstance();
         int hour = cal.get(Calendar.HOUR_OF_DAY);
         int minute = cal.get(Calendar.MINUTE);

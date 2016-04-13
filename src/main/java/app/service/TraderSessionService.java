@@ -18,7 +18,7 @@ import java.util.List;
 public class TraderSessionService {
     @Autowired
     TraderSessionRepository traderSessionRepository;
-    @Cacheable
+    //@Cacheable
     public TraderSession getSession(){
         List<TraderSession> iterable =traderSessionRepository.findAllData();
         if(iterable.size()>0){
@@ -26,9 +26,12 @@ public class TraderSessionService {
         }
         return null;
     }
+
+    @Cacheable
     public Iterable<TraderSession> findAll(){
         return traderSessionRepository.findAll();
     }
+
     @CacheEvict(allEntries = true)
     public void save(TraderSession entity){
         traderSessionRepository.save(entity);

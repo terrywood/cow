@@ -1,8 +1,10 @@
 package app;
 
 import app.entity.StockListData;
+import app.entity.TraderSession;
 import app.service.StockListService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -61,17 +65,34 @@ public class Application {
     }
 
 
-   /*@Bean
-    public CommandLineRunner demo(StockListService stockListService) {
+   @Bean
+    public CommandLineRunner demo() {
         return (args) -> {
-            // save a couple of customers
 
-            List<StockListData> list = stockListService.findByAccountID("607955");
-            for(StockListData stockListData:list){
-                stockListService.delete(stockListData.getListID());
+            TraderSession entity = new TraderSession();
+            //entity.setCookie("name=value; JSESSIONID=7FBD68852BD89E79C5D1102E2B8B64F0; dse_sessionId=64D3943AF312E53AC58207CC87615941; userId=J*1C*8F*106*C1*F1*28*C6r*96k1p*B3*BBG*97*883*91G*16bw*22*A05*A8*CCL8G*97*883*91G*16bw*22*A05*A8*CCL8G*97*883*91G*16bw*22*A05*A8*CCL8*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00");
+            entity.setCookie("name=value; JSESSIONID=7FBD68852BD89E79C5D1102E2B8B64F0; dse_sessionId=64D3943AF312E53AC58207CC87615941");
+            entity.setSid("64D3943AF312E53AC58207CC87615941");
+
+            for(int i=0; i<Integer.MAX_VALUE;i++){
+
+                String httpUrl ="https://etrade.gf.com.cn/entry?classname=com.gf.etrade.control.StockUF2Control&method=queryFund&_dc="+System.currentTimeMillis()+"&dse_sessionId="+entity.getSid();
+                try {
+                    URL url = new URL(httpUrl);
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("GET");
+                    connection.setRequestProperty("Cookie", entity.getCookie());
+                    connection.connect();
+                    String result = IOUtils.toString(connection.getInputStream(), "UTF-8");
+                    //Map map = jacksonObjectMapper.readValue(connection.getInputStream(), Map.class);
+                    System.out.println(result);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                Thread.sleep(10000);
             }
-            log.info("");
+
 
         };
-    }*/
+    }
 }

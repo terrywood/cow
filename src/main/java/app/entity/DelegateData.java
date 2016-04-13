@@ -28,7 +28,6 @@ import java.util.Date;
  * StockName: "柯利达"
  */
 @Data
-@Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DelegateData {
     @Id
