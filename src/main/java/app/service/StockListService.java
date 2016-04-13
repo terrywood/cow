@@ -6,10 +6,7 @@ import app.entity.Trader;
 import app.repository.StockListRepository;
 import app.repository.TraderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,7 +15,6 @@ import java.util.List;
  * Created by terry.wu on 2016/4/12 0012.
  */
 @Service
-@CacheConfig(cacheNames = "stockList")
 public class StockListService {
     @Autowired
     StockListRepository stockListRepository;
@@ -29,24 +25,26 @@ public class StockListService {
         return  stockListRepository.exists(id);
     }*/
 
-    @Cacheable
-    public StockListData findOne(Long id){
-        return  stockListRepository.findOne(id);
+    @Cacheable(value="movieFindCache")
+    public StockListData findOne(Long listID){
+        System.out.println("findOne["+listID+"]");
+        return  stockListRepository.findOne(listID);
     }
 
-    @Cacheable
+    @Cacheable(value="findByAccountID")
     public List<StockListData> findByAccountID(String accountID){
+        System.out.println("findByAccountID["+accountID+"]");
         return  stockListRepository.findByAccountID(accountID);
     }
 
-    @CacheEvict(allEntries = true)
+    @CacheEvict(value = { "movieFindCache", "findByAccountID" }, allEntries = true)
     public void save(StockListData entity){
         stockListRepository.save(entity);
     }
 
-    @CacheEvict(allEntries = true)
-    public void delete(Long id){
-        System.out.println("delete id ->"+id);
-        stockListRepository.delete(id);
+    @CacheEvict(value = { "movieFindCache", "findByAccountID" }, allEntries = true)
+    public void delete(Long listID){
+        System.out.println("delete id ->"+listID);
+        stockListRepository.delete(listID);
     }
 }

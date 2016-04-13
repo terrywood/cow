@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 import static javax.persistence.GenerationType.IDENTITY;
@@ -14,7 +15,7 @@ import static javax.persistence.GenerationType.IDENTITY;
  */
 @Entity
 @Data
-public class TraderSession {
+public class TraderSession implements Serializable {
     @Id
     private String sid;
     @Column(length = 500)

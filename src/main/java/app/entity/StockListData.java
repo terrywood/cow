@@ -9,12 +9,13 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
 @Entity
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class StockListData {
+public class StockListData implements Serializable {
     @Id
     @JsonProperty(value = "ListID")
     public Long listID;

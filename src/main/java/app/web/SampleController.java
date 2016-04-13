@@ -17,6 +17,7 @@
 package app.web;
 
 
+import app.bean.StockList;
 import app.entity.HistoryData;
 import app.entity.StockListData;
 import app.service.StockListService;
@@ -40,27 +41,38 @@ public class SampleController {
 	@RequestMapping("/hi")
 	@ResponseBody
 	@Transactional(readOnly = true)
-	public String helloWorld() {
+	public List<StockListData> helloWorld() {
         //System.out.println(traderSessionService.getSession());
-
 		List<StockListData> list = stockListService.findByAccountID("607955");
-		for(StockListData stockListData:list){
-			stockListData.setLastTradingTime(new Date());
-			stockListService.save(stockListData);
-		}
-		return "hello";
+		return list;
 	}
-	@RequestMapping("/dd")
+	@RequestMapping("/id")
 	@ResponseBody
-	@Transactional
-	public String dd() {
-        //System.out.println(traderSessionService.getSession());
-		List<StockListData> list = stockListService.findByAccountID("607955");
-		for(StockListData stockListData:list){
-			stockListService.delete(stockListData.getListID());
-		}
-		return "hello";
+	public StockListData id(Long id) {
+		StockListData entity = stockListService.findOne(id);
+		return entity;
 	}
+	@RequestMapping("/sav")
+	@ResponseBody
+	public StockListData dd(Long id) {
+		StockListData entity = stockListService.findOne(id);
+		if(entity!=null){
+			entity.setLastTradingTime(new Date());
+			stockListService.save(entity);
+		}
+		return entity;
+	}
+	@RequestMapping("/del")
+	@ResponseBody
+	public String del(Long id) {
+		StockListData entity = stockListService.findOne(id);
+		if(entity!=null){
+			stockListService.delete(id);
+		}
+		return "OK";
+	}
+
+
 /*
 
 	//@RequestMapping("/map")
@@ -74,4 +86,6 @@ public class SampleController {
 		return data;
 	}
 */
+
+
 }
