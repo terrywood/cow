@@ -24,23 +24,27 @@ public class StockListData {
     public String accountID;
     @JsonProperty(value = "ActionAmount")
     public Integer actionAmount;
-    @JsonProperty(value = "FirstTradingTime")
+/*    @JsonProperty(value = "FirstTradingTime")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh" , timezone="GMT+8")
-    public Date firstTradingTime;
+    public Date firstTradingTime;*/
     @JsonProperty(value = "LastTradingTime")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh" , timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public Date lastTradingTime;
     @JsonProperty(value = "StockCode")
     public String stockCode;
     @JsonProperty(value = "StockName")
     public String stockName;
-    @JsonProperty(value = "TodaySellAmount")
+
+/*    @JsonProperty(value = "TodaySellAmount")
     public Integer todaySellAmount;
     @JsonProperty(value = "TotalBuyAmount")
     public Integer totalBuyAmount;
+    */
+
     @JsonProperty(value = "UnitPrice")
     public Float unitPrice;
 
+/*
     @JsonIgnore
     @LastModifiedDate
     @Column(name = "last_update_time")
@@ -53,5 +57,5 @@ public class StockListData {
     @PreUpdate
     void preUpdate(){
         this.setLastUpdateTime( new Date() );
-    }
+    }*/
 }

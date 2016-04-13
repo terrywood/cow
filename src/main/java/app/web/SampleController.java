@@ -18,6 +18,8 @@ package app.web;
 
 
 import app.entity.HistoryData;
+import app.entity.StockListData;
+import app.service.StockListService;
 import app.service.TraderSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,16 +29,36 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Date;
+import java.util.List;
 
 @Controller
 public class SampleController {
+	@Autowired
+	private StockListService stockListService;
 	@Autowired
 	private TraderSessionService traderSessionService;
 	@RequestMapping("/hi")
 	@ResponseBody
 	@Transactional(readOnly = true)
 	public String helloWorld() {
-        System.out.println(traderSessionService.getSession());
+        //System.out.println(traderSessionService.getSession());
+
+		List<StockListData> list = stockListService.findByAccountID("607955");
+		for(StockListData stockListData:list){
+			stockListData.setLastTradingTime(new Date());
+			stockListService.save(stockListData);
+		}
+		return "hello";
+	}
+	@RequestMapping("/dd")
+	@ResponseBody
+	@Transactional
+	public String dd() {
+        //System.out.println(traderSessionService.getSession());
+		List<StockListData> list = stockListService.findByAccountID("607955");
+		for(StockListData stockListData:list){
+			stockListService.delete(stockListData.getListID());
+		}
 		return "hello";
 	}
 /*

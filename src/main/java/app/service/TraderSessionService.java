@@ -1,11 +1,14 @@
 package app.service;
 
 import app.entity.TraderSession;
+import app.repository.TraderSessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Created by terry.wu on 2016/4/12 0012.
@@ -17,7 +20,11 @@ public class TraderSessionService {
     TraderSessionRepository traderSessionRepository;
     @Cacheable
     public TraderSession getSession(){
-        return traderSessionRepository.findAll().iterator().next();
+        List<TraderSession> iterable =traderSessionRepository.findAllData();
+        if(iterable.size()>0){
+           return  iterable.get(0);
+        }
+        return null;
     }
     public Iterable<TraderSession> findAll(){
         return traderSessionRepository.findAll();

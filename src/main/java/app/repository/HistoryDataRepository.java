@@ -1,4 +1,4 @@
-package app.service;
+package app.repository;
 
 import app.entity.HistoryData;
 import app.entity.StockListData;

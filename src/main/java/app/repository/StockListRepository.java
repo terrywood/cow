@@ -1,9 +1,12 @@
-package app.service;
+package app.repository;
 
 import app.entity.StockListData;
 import org.springframework.data.repository.CrudRepository;
 
-public interface StockListRepository extends CrudRepository<StockListData, Long> {
+import java.util.List;
 
-  //  List<AccountData> findByLastName(String lastName);
+public interface StockListRepository extends CrudRepository<StockListData, Long> {
+    List<StockListData> findByAccountID(String accountID);
+
+    //  List<AccountData> findByLastName(String lastName);
 }

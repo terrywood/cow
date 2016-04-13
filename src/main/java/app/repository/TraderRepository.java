@@ -1,10 +1,10 @@
-package app.service;
+package app.repository;
 
+import app.entity.HistoryData;
 import app.entity.Trader;
-import app.entity.TraderSession;
 import org.springframework.data.repository.CrudRepository;
 
-public interface TraderSessionRepository extends CrudRepository<TraderSession, String> {
+public interface TraderRepository extends CrudRepository<Trader, Long> {
 
   //  List<AccountData> findByLastName(String lastName);
 }

@@ -22,7 +22,7 @@ public class HistoryData {
     public Long listID;
 
     @JsonProperty(value = "AddTime")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh" , timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public Date addTime;
 
 /*    @JsonProperty(value = "ClearFlag")
@@ -36,7 +36,7 @@ public class HistoryData {
     @JsonProperty(value = "TransactionUnitPrice")
     public Float transactionUnitPrice;
 
-    @JsonIgnore
+/*    @JsonIgnore
     @LastModifiedDate
     @Column(name = "last_update_time")
     private Date lastUpdateTime;
@@ -48,6 +48,6 @@ public class HistoryData {
     @PreUpdate
     void preUpdate(){
         this.setLastUpdateTime( new Date() );
-    }
+    }*/
 
 }

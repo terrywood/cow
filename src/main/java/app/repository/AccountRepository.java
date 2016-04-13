@@ -1,4 +1,4 @@
-package app.service;
+package app.repository;
 
 import app.entity.AccountData;
 import org.springframework.data.repository.CrudRepository;

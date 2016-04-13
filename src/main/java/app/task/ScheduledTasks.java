@@ -2,26 +2,25 @@ package app.task;
 
 import app.bean.Account;
 import app.bean.StockList;
-import app.entity.HistoryData;
-import app.entity.StockListData;
-import app.entity.Trader;
-import app.entity.TraderSession;
-import app.service.HistoryDataRepository;
-import app.service.StockListRepository;
-import app.service.TraderRepository;
+import app.entity.*;
+import app.repository.HistoryDataRepository;
+import app.service.StockListService;
+import app.service.TraderService;
 import app.service.TraderSessionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.thymeleaf.util.DateUtils;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -33,11 +32,11 @@ public class ScheduledTasks {
     @Autowired
     ObjectMapper jacksonObjectMapper;
     @Autowired
-    StockListRepository stockListRepository;
+    StockListService stockListService;
     @Autowired
     HistoryDataRepository historyDataRepository;
     @Autowired
-    TraderRepository traderRepository;
+    TraderService traderService;
     @Autowired
     TraderSessionService traderSessionService;
 
@@ -52,17 +51,21 @@ public class ScheduledTasks {
     //阿勤
     //String userId = "773183";
 
-    public void trading (String market,Long id,String code, Integer amount,String price,String type){
-        TraderSession entity = traderSessionService.getSession();
-        //https://etrade.gf.com.cn/entry?classname=com.gf.etrade.control.StockUF2Control&method=entrust&dse_sessionId=A084EE8300CE52072EA3FEE36654ABD8
-       String account = null;
-       if(market.equals("2")){
-           account = entity.getSzAccount();
-       }else {
-           account = entity.getShAccount();
-       }
+    public void trading (String market,Long id,String code, Integer amount,String price,String type,Boolean fast){
+        if(!traderService.exists(id)){
 
-     /*   String httpUrl ="https://etrade.gf.com.cn/entry?classname=com.gf.etrade.control.StockUF2Control&method=entrust&dse_sessionId="+entity.getSid();
+
+
+             /*
+
+            TraderSession entity = traderSessionService.getSession();
+            String account = null;
+            if(market.equals("2")){
+                account = entity.getSzAccount();
+            }else {
+                account = entity.getShAccount();
+            }
+   String httpUrl ="https://etrade.gf.com.cn/entry?classname=com.gf.etrade.control.StockUF2Control&method=entrust&dse_sessionId="+entity.getSid();
         try {
             URL url = new URL(httpUrl);
             HttpURLConnection connection = (HttpURLConnection) url .openConnection();
@@ -86,13 +89,21 @@ public class ScheduledTasks {
             e.printStackTrace();
         }*/
 
-        Trader trader = new Trader();
-        trader.setType(type);
-        trader.setDelegateID(id);
-        trader.setTransactionAmount(amount);
-        trader.setTransactionUnitPrice(Float.valueOf(price));
-        trader.setCode(code);
-        traderRepository.save(trader);
+            Trader trader = new Trader();
+            trader.setType(type);
+            trader.setDelegateID(id);
+            trader.setTransactionAmount(amount);
+            trader.setTransactionUnitPrice(Float.valueOf(price));
+            trader.setCode(code);
+            trader.setFast(fast);
+            traderService.save(trader);
+
+
+
+        }
+
+
+
     }
 
 
@@ -113,7 +124,7 @@ public class ScheduledTasks {
                    result = String .format("%.2f",price);
                 }
                 //call 券商API
-                trading(stockList.getMarket(),data.getDelegateID() ,stockList.getStockCode(),amount,result,type);
+                trading(stockList.getMarket(),data.getDelegateID() ,stockList.getStockCode(),amount,result,type,false);
                 historyDataRepository.save(data);
 
             }
@@ -129,52 +140,85 @@ public class ScheduledTasks {
 
 
     @Scheduled(fixedDelay = 1)
-    public void init() throws IOException {
+    public void init()  {
         if(isTradeDayTimeByMarket()){
-            //long times = System.currentTimeMillis();
-            URL url = new URL("https://swww.niuguwang.com/tr/201411/account.ashx?aid=" + userId + "&s=xiaomi&version=3.4.4&packtype=1");
-            Account bean = jacksonObjectMapper.readValue(url, Account.class);
-            //List list = bean.getStockListData();
-            for (StockListData data : bean.getStockListData()) {
+            long times = System.currentTimeMillis();
+            URL url = null;
+            try {
+                url = new URL("https://swww.niuguwang.com/tr/201411/account.ashx?aid=" + userId + "&s=xiaomi&version=3.4.4&packtype=1");
+                Account bean = jacksonObjectMapper.readValue(url, Account.class);
+                //List list = bean.getStockListData();
+                for (DelegateData data : bean.getDelegateData()) {
+                    trading(data.getMarket(),data.getDelegateID(),data.getStockCode(),data.getDelegateAmount(),data.getDelegateUnitPrice(),data.getDelegateType(),true);
+                }
+                //handle clear stock
+                List<StockListData> list = this.stockListService.findByAccountID(userId);
+                for(StockListData entity : list){
+                    Long entityId = entity.getListID();
+                    boolean isDelete = true;
+                    for (StockListData data : bean.getStockListData()) {
+                        Long id = data.getListID();
+                        if(entityId.equals(id)){
+                            isDelete = false;
+                            break;
+                        }
+                    }
+                    if(isDelete){
+                        stockListItem(entity);
+                        stockListService.delete(entityId);
+                    }
+                }
+                //handle update
+
+           for (StockListData data : bean.getStockListData()) {
                 Long id = data.getListID();
-                if (map.containsKey(id)) {
-                    Date date = map.get(id);
-                    Date lastTrading = data.getLastTradingTime();
-                    if (!date.equals(lastTrading)) {
-                        stockListItem(data);
-                        stockListRepository.save(data);
-                        map.put(id, lastTrading);
-                    }/* else {
-                        System.out.println("no update by "+userId);
-                    }*/
-                } else {
+                StockListData entity = stockListService.findOne(id);
+                if(entity==null){
                     stockListItem(data);
-                    stockListRepository.save(data);
-                    Date lastTrading = data.getLastTradingTime();
-                    map.put(id, lastTrading);
+                    stockListService.save(data);
+                }else{
+                    long lastTrading = data.getLastTradingTime().getTime();
+                    if (entity.getLastTradingTime().getTime()==lastTrading) {
+                        stockListItem(data);
+                        stockListService.save(data);
+                    }
                 }
             }
-           // System.out.println("use [" + (times - System.currentTimeMillis()) + "] ms");
-        }else{
-            //System.out.println(new Date() + "-----------------no  trade Day");
-            TraderSession entity = traderSessionService.getSession();
-            long dc = System.currentTimeMillis()/100l;
-            String httpUrl ="https://etrade.gf.com.cn/entry?classname=com.gf.etrade.control.StockUF2Control&method=queryFund&dse_sessionId="+entity.getSid()+"&_dc="+dc;
-            try {
-                URL url = new URL(httpUrl);
-                HttpURLConnection connection = (HttpURLConnection) url .openConnection();
-                connection.setRequestMethod("GET");
-                connection.setRequestProperty("Cookie",  entity.getCookie());
-                connection.connect();
-                // String result = IOUtils.toString(connection.getInputStream(), Consts.UTF_8);
-                Map map = jacksonObjectMapper.readValue(connection.getInputStream(), Map.class);
-                System.out.println(map);
-            } catch (Exception e) {
+
+
+            System.out.println("use [" + (times - System.currentTimeMillis()) + "] ms");
+            } catch (IOException e) {
                 e.printStackTrace();
+                try {
+                    Thread.sleep(10000); //sleep 10 sec
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
             }
 
+        }else{
+            System.out.println(new Date() + "----------------- is not trade Day");
+            TraderSession entity = traderSessionService.getSession();
+            if(entity!=null){
+                long dc = System.currentTimeMillis()/100l;
+                String httpUrl ="https://etrade.gf.com.cn/entry?classname=com.gf.etrade.control.StockUF2Control&method=queryFund&dse_sessionId="+entity.getSid()+"&_dc="+dc;
+                try {
+                    URL url = new URL(httpUrl);
+                    HttpURLConnection connection = (HttpURLConnection) url .openConnection();
+                    connection.setRequestMethod("GET");
+                    connection.setRequestProperty("Cookie",  entity.getCookie());
+                    connection.connect();
+                    // String result = IOUtils.toString(connection.getInputStream(), Consts.UTF_8);
+                    Map map = jacksonObjectMapper.readValue(connection.getInputStream(), Map.class);
+                    System.out.println(map);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+
             try {
-                Thread.sleep(5*60*1000l); //sleep 5 min
+                Thread.sleep(60*1000l); //sleep 5 min
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -183,7 +227,14 @@ public class ScheduledTasks {
     }
 
     public boolean isTradeDayTimeByMarket() {
-        //if(debug)return true;
+      /*  if(1==1){
+            try {
+                Thread.sleep(1000); //sleep 5 min
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return true;
+        }*/
         Calendar cal = Calendar.getInstance();
         int hour = cal.get(Calendar.HOUR_OF_DAY);
         int minute = cal.get(Calendar.MINUTE);

@@ -18,6 +18,12 @@ public class Trader {
     @LastModifiedDate
     @Column(name = "last_update_time")
     private Date lastUpdateTime;
+    @JsonProperty(value = "Type")
+    public String type; // 1 buy ; 2 sell
+    public Integer transactionAmount;
+    public Float transactionUnitPrice;
+    public String code;
+    public Boolean fast;
     @PrePersist
     void prePersist(){
         this.setLastUpdateTime( new Date() );
@@ -26,10 +32,4 @@ public class Trader {
     void preUpdate(){
         this.setLastUpdateTime( new Date() );
     }
-    @JsonProperty(value = "Type")
-    public String type; // 1 buy ; 2 sell
-    public Integer transactionAmount;
-    public Float transactionUnitPrice;
-    public String code;
-
 }
