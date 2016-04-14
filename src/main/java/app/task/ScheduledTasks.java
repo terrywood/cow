@@ -2,28 +2,30 @@ package app.task;
 
 import app.bean.Account;
 import app.bean.StockList;
-import app.entity.*;
+import app.entity.DelegateData;
+import app.entity.HistoryData;
+import app.entity.StockListData;
+import app.entity.Trader;
 import app.repository.HistoryDataRepository;
 import app.service.StockListService;
 import app.service.TraderService;
 import app.service.TraderSessionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-@Component
+//@Component
 //@Transactional
 public class ScheduledTasks {
-    //ConcurrentMap<Long, Date> map = new ConcurrentHashMap();
+    /*
     @Autowired
     ObjectMapper jacksonObjectMapper;
     @Autowired
@@ -37,19 +39,19 @@ public class ScheduledTasks {
     @Autowired
     TraderSessionService traderSessionService;
 
-    /*
+    *//*
       @Scheduled(cron = "0 0/5 9,16 * * ?")
-      boolean debug = true;*/
-    /*guo jin*/
+      boolean debug = true;*//*
+    *//*guo jin*//*
     // String  userId = "605166";
-    /*terry*/
+    *//*terry*//*
     //String userId = "607955";
     //阿勤
     String userId = "773183";
 
     public void trading(String market, Long id, String code, Integer amount, String price, String type, Boolean fast) {
         if (!traderService.exists(id)) {
-            TraderSession entity = traderSessionService.getSession();
+          *//*  TraderSession entity = traderSessionService.getSession();
 
             String account = null;
             if (market.equals("2")) {
@@ -80,7 +82,7 @@ public class ScheduledTasks {
                 System.out.println(result);
             } catch (Exception e) {
                 e.printStackTrace();
-            }
+            }*//*
 
             Trader trader = new Trader();
             trader.setType(type);
@@ -123,13 +125,13 @@ public class ScheduledTasks {
 
     }
 
-    /* ObjectMapper mapper = new ObjectMapper();
+    *//* ObjectMapper mapper = new ObjectMapper();
        mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-       Account user = mapper.readValue(url, Account.class);*/
+       Account user = mapper.readValue(url, Account.class);*//*
 
-/*
+*//*
     @Scheduled(cron = "0/1 * * * * ?")
     public void connectGf() {
         System.out.println("run connectGf");
@@ -152,14 +154,14 @@ public class ScheduledTasks {
                 e.printStackTrace();
             }
         }
-    }*/
+    }*//*
 
 
 
     @Scheduled(fixedDelay = 1)
     public void init() {
         if (isTradeDayTimeByMarket()) {
-            long times = System.currentTimeMillis();
+          //  long times = System.currentTimeMillis();
             URL url = null;
             try {
                 url = new URL("https://swww.niuguwang.com/tr/201411/account.ashx?aid=" + userId + "&s=xiaomi&version=3.4.4&packtype=1");
@@ -208,7 +210,7 @@ public class ScheduledTasks {
                 }
 
 
-                System.out.println("use [" + (times - System.currentTimeMillis()) + "] ms");
+               // System.out.println("use [" + (times - System.currentTimeMillis()) + "] ms");
             } catch (IOException e) {
                 e.printStackTrace();
                 try {
@@ -231,14 +233,14 @@ public class ScheduledTasks {
     }
 
     public boolean isTradeDayTimeByMarket() {
-     /*   if (1 == 1) {
+     *//*   if (1 == 1) {
             try {
                 Thread.sleep(2000); //sleep 5 sec
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             return true;
-        }*/
+        }*//*
         Calendar cal = Calendar.getInstance();
         int hour = cal.get(Calendar.HOUR_OF_DAY);
         int minute = cal.get(Calendar.MINUTE);
@@ -254,5 +256,5 @@ public class ScheduledTasks {
         }
         return true;
     }
-
+*/
 }

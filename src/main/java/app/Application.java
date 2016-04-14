@@ -65,16 +65,16 @@ public class Application {
     }
 
 
-   @Bean
+/*   @Bean
     public CommandLineRunner demo() {
         return (args) -> {
 
             TraderSession entity = new TraderSession();
             //entity.setCookie("name=value; JSESSIONID=7FBD68852BD89E79C5D1102E2B8B64F0; dse_sessionId=64D3943AF312E53AC58207CC87615941; userId=J*1C*8F*106*C1*F1*28*C6r*96k1p*B3*BBG*97*883*91G*16bw*22*A05*A8*CCL8G*97*883*91G*16bw*22*A05*A8*CCL8G*97*883*91G*16bw*22*A05*A8*CCL8*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00");
-            entity.setCookie("name=value; JSESSIONID=7FBD68852BD89E79C5D1102E2B8B64F0; dse_sessionId=64D3943AF312E53AC58207CC87615941");
-            entity.setSid("64D3943AF312E53AC58207CC87615941");
+            entity.setCookie("name=value; JSESSIONID=81CAD6382C06FF18AEDEF9857B207A28; dse_sessionId=3814400D19783EDC6BED1A48297079BF; userId=J*1C*8F*106*C1*F1*28*C6r*96k1p*B3*BBG*97*883*91G*16bw*22*A05*A8*CCL8G*97*883*91G*16bw*22*A05*A8*CCL8G*97*883*91G*16bw*22*A05*A8*CCL8*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00*00");
+            entity.setSid("3814400D19783EDC6BED1A48297079BF");
 
-            for(int i=0; i<Integer.MAX_VALUE;i++){
+            for(long i=0; i<Long.MAX_VALUE;i++){
 
                 String httpUrl ="https://etrade.gf.com.cn/entry?classname=com.gf.etrade.control.StockUF2Control&method=queryFund&_dc="+System.currentTimeMillis()+"&dse_sessionId="+entity.getSid();
                 try {
@@ -89,10 +89,10 @@ public class Application {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                Thread.sleep(10000);
+                Thread.sleep(5000);
             }
 
 
         };
-    }
+    }*/
 }
