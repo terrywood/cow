@@ -106,6 +106,13 @@
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
         </dependency>
+        <dependency>
+            <groupId>cn.skypark.code</groupId>
+            <artifactId>yjb_verify_code</artifactId>
+            <version>2.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/yjb_verify_code.jar</systemPath>
+        </dependency>
 
 
 
