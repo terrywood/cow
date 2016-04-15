@@ -1,34 +1,18 @@
 package app.service;
 
 import app.entity.Trader;
-import app.repository.TraderRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
 
 /**
- * Created by terry.wu on 2016/4/12 0012.
+ * Created by terry.wu on 2016/4/15 0015.
  */
-@Service
-@CacheConfig(cacheNames = "trader")
-public class TraderService {
-    @Autowired
-    TraderRepository traderRepository;
+public interface TraderService {
 
-    @Cacheable(value="trader",key="#id")
-    public Boolean exists(Long id){
-        return  traderRepository.exists(id);
-    }
 
-    @CacheEvict(allEntries = true)
-    public void save(Trader entity){
-        traderRepository.save(entity);
-    }
+    Boolean exists(Long id);
 
-    @CacheEvict(value="trader",key="#id")
-    public void delete(Long id){
-        traderRepository.delete(id);
-    }
+    void save(Trader entity);
+
+    void trading(String market, Long id, String code, Integer amount, String price, String type, Boolean fast);
 }

@@ -27,17 +27,12 @@ public class ClientFormLogin {
     public static void main(String[] args) throws Exception {
         long start = System.currentTimeMillis();
         BasicCookieStore cookieStore = new BasicCookieStore();
- /*       Cookie cookie = new BasicClientCookie("JSESSIONID","B9A36160C47F08B46E037FAF638757A4");
-        Cookie cookie2 = new BasicClientCookie("pgv_pvi","595542016");
-        Cookie cookie3 = new BasicClientCookie("pgv_si","s7088572416");
-        cookieStore.addCookie(cookie);
-        cookieStore.addCookie(cookie2);
-        cookieStore.addCookie(cookie3);*/
         CloseableHttpClient httpclient = HttpClients.custom()
                 .setDefaultCookieStore(cookieStore)
+                .setUserAgent("Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET4.0C; .NET4.0E)")
                 .build();
         try {
-            HttpGet httpget = new HttpGet("https://jy.yongjinbao.com.cn/winner_gj/gjzq/");
+           /* HttpGet httpget = new HttpGet("https://jy.yongjinbao.com.cn/winner_gj/gjzq/");
             CloseableHttpResponse response1 = httpclient.execute(httpget);
             try {
                 HttpEntity entity = response1.getEntity();
@@ -56,7 +51,7 @@ public class ClientFormLogin {
                 }
             } finally {
                 response1.close();
-            }
+            }*/
 
             HttpGet httpget3 = new HttpGet("https://jy.yongjinbao.com.cn/winner_gj/gjzq/user/extraCode.jsp");
             CloseableHttpResponse response3 = httpclient.execute(httpget3);
@@ -80,9 +75,6 @@ public class ClientFormLogin {
             System.out.println("very code["+code+"]");
             HttpUriRequest login = RequestBuilder.post()
                     .setUri(new URI("https://jy.yongjinbao.com.cn/winner_gj/gjzq/exchange.action"))
-                    .addParameter("validateCode", code)
-                    .addParameter("account_content", "40128457")
-                    .addParameter("password", "A%2B9BQUFnQUJBQUFRQk5mcSttVjdjRXJjN2FqRHhRNCtEZ0t4aTBZL3J1MFp4eW9idWx1bXJpSFdNOQ%3D%3D")
                     .addParameter("function_id", "200")
                     .addParameter("login_type", "stock")
                     .addParameter("version", "200")
@@ -90,12 +82,17 @@ public class ClientFormLogin {
                     .addParameter("remember_me", "")
                     .addParameter("input_content", "1")
                     .addParameter("content_type", "0")
+                    .addParameter("account_content", "40128457")
+                    .addParameter("password", "A+9BQUFnQUJBQUJRQWdxZXI3Qkh0SDRmZXg5alYvK1VVOFVPUGc0Q3NZdEljcU5aeERtTUtYL3R5bQ==")
                     .addParameter("loginPasswordType", "B64")
-                    .addParameter("disk_serial_id", "")
-                    .addParameter("mac_addr", "1C-39-47-20-CA-3A")
-                    .addParameter("cpuid", "-306D4-7FFAFBBF")
-                    .addParameter("machinecode", "-306D4-7FFAFBBF")
+                    .addParameter("validateCode", code)
+                    .addParameter("mac_addr", "54-59-57-07-B9-0F")
+                    .addParameter("cpuid", "-306C3-7FFAFBBF")
+                    .addParameter("disk_serial_id", "WD-WMC3F0J4P22T")
+                    .addParameter("machinecode", "-306C3-7FFAFBBF")
+                    .setHeader("Referer","https://jy.yongjinbao.com.cn/winner_gj/gjzq/")
                     .build();
+
             CloseableHttpResponse response2 = httpclient.execute(login);
             try {
                 HttpEntity entity = response2.getEntity();
