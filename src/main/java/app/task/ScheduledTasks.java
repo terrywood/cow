@@ -34,18 +34,12 @@ public class ScheduledTasks {
     TraderService traderService;
     @Autowired
     TraderSessionService traderSessionService;
-
-
     /*guo jin*/
     // String  userId = "605166";
     //*terry*/
     //String userId = "607955";
     //阿勤
     String userId = "773183";
-
-
-
-
     public void stockListItem(StockListData stockList) throws IOException {
         URL url = new URL("https://swww.niuguwang.com/tr/201411/stocklistitem.ashx?id=" + stockList.getListID() + "&s=xiaomi&version=3.4.4&packtype=1");
         StockList bean = jacksonObjectMapper.readValue(url, StockList.class);

@@ -66,10 +66,13 @@ public class TraderYJBService implements TraderService, InitializingBean {
     }
 
     BasicCookieStore cookieStore;
-
+    TraderSession entity ;
     @Override
     public void afterPropertiesSet() throws Exception {
         this.cookieStore = new BasicCookieStore();
+        this.entity= new TraderSession();
+        entity.setShAccount("A491467753");
+        entity.setSzAccount("0126862343");
 /*        try {
             File file  = ResourceUtils.getFile("classpath:yjb.json");
             System.out.println(file.getAbsolutePath());
@@ -91,11 +94,12 @@ public class TraderYJBService implements TraderService, InitializingBean {
             HttpGet httpget3 = new HttpGet("https://jy.yongjinbao.com.cn/winner_gj/gjzq/stock/exchange.action?request_id=mystock_405");
             CloseableHttpResponse response3 = httpclient.execute(httpget3);
             HttpEntity entity = response3.getEntity();
-            // String result = IOUtils.toString(entity.getContent(), "UTF-8");
-            Map map = jacksonObjectMapper.readValue(entity.getContent(), Map.class);
+            String result = IOUtils.toString(entity.getContent(), "UTF-8");
+            log.info(result);
+         /*   Map map = jacksonObjectMapper.readValue(entity.getContent(), Map.class);
             if (map.get("msg_no") != "0") {
                 login();
-            }
+            }*/
             EntityUtils.consume(entity);
         } catch (Exception e) {
             e.printStackTrace();
@@ -118,6 +122,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
                 EntityUtils.consume(entity3);
                 MyCheckCodeTool tool = new MyCheckCodeTool("guojin");
                 String code = tool.getCheckCode_from_image(image);
+
                 HttpUriRequest login = RequestBuilder.post()
                         .setUri(new URI("https://jy.yongjinbao.com.cn/winner_gj/gjzq/exchange.action"))
                         .addParameter("function_id", "200")
@@ -172,14 +177,47 @@ public class TraderYJBService implements TraderService, InitializingBean {
     @Override
     public void trading(String market, Long id, String code, Integer amount, String price, String type, Boolean fast) {
         if (!exists(id)) {
-            TraderSession entity = new TraderSession();
             String account = null;
+            String requestId = null;
+            String remark = null;
             if (market.equals("2")) {
                 account = entity.getSzAccount();
             } else {
                 account = entity.getShAccount();
             }
-
+            if(type.equals("1")){
+                requestId ="buystock_302";
+            }else{
+                requestId ="sellstock_302";
+            }
+            try {
+                CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore)
+                        .setUserAgent(userAgent)
+                        .build();
+                HttpUriRequest trading = RequestBuilder.get()
+                        .setUri(new URI("https://jy.yongjinbao.com.cn/winner_gj/gjzq/stock/exchange.action"))
+                        .addParameter("CSRF_Token", "undefined")
+                        .addParameter("timestamp", "0.828934287885204")
+                        .addParameter("request_id", requestId)
+                        .addParameter("stock_account", account)
+                        .addParameter("exchange_type", market)
+                        .addParameter("entrust_prop", "0")
+                        .addParameter("entrust_bs", type)
+                        .addParameter("stock_code",code )
+                        .addParameter("entrust_price",price )
+                        .addParameter("entrust_amount",String.valueOf(amount) )
+                        .addParameter("elig_riskmatch_flag","1" )
+                        .addParameter("service_type","stock" )
+                       // .setHeader("Referer", "https://jy.yongjinbao.com.cn/winner_gj/gjzq/stock/buystock.html")
+                        .build();
+                CloseableHttpResponse response3 = httpclient.execute(trading);
+                HttpEntity entity = response3.getEntity();
+                remark = IOUtils.toString(entity.getContent(), "UTF-8");
+               // Map map = jacksonObjectMapper.readValue(entity.getContent(), Map.class);
+                EntityUtils.consume(entity);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             Trader trader = new Trader();
             trader.setType(type);
             trader.setDelegateID(id);
@@ -187,6 +225,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
             trader.setTransactionUnitPrice(Float.valueOf(price));
             trader.setCode(code);
             trader.setFast(fast);
+            trader.setRemark(remark);
             save(trader);
         }
     }

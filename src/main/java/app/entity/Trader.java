@@ -24,6 +24,8 @@ public class Trader {
     public Float transactionUnitPrice;
     public String code;
     public Boolean fast;
+    @Column(length = 500)
+    public String remark;
     @PrePersist
     void prePersist(){
         this.setLastUpdateTime( new Date() );
