@@ -213,6 +213,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
                 CloseableHttpResponse response3 = httpclient.execute(trading);
                 HttpEntity entity = response3.getEntity();
                 remark = IOUtils.toString(entity.getContent(), "UTF-8");
+                System.out.println(remark);
                // Map map = jacksonObjectMapper.readValue(entity.getContent(), Map.class);
                 EntityUtils.consume(entity);
             } catch (Exception e) {
