@@ -73,12 +73,15 @@ public class ScheduledTasks {
 
 */
 
-
+   /* @Scheduled(cron = "0/10 * 9-15 * * ?")
+    public void balanceTest() {
+        System.out.println("balanceTest----------------------"+ new Date());
+    }*/
 
     @Scheduled(fixedDelay = 1)
     public void init() {
         if (isTradeDayTimeByMarket()) {
-            //  long times = System.currentTimeMillis();
+            long times = System.currentTimeMillis();
             URL url = null;
             try {
                 url = new URL("https://swww.niuguwang.com/tr/201411/account.ashx?aid=" + userId + "&s=xiaomi&version=3.4.4&packtype=1");
@@ -127,7 +130,7 @@ public class ScheduledTasks {
                 }
 
 
-                // System.out.println("use [" + (times - System.currentTimeMillis()) + "] ms");
+                 //System.out.println("use [" + (times - System.currentTimeMillis()) + "] ms");
             } catch (IOException e) {
                 e.printStackTrace();
                 try {

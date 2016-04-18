@@ -1,10 +1,12 @@
 package app.service;
 
+import app.bean.YJBResult;
 import app.entity.Trader;
 import app.entity.TraderSession;
 import app.repository.TraderRepository;
 import cn.skypark.code.MyCheckCodeTool;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.annotation.Schedules;
@@ -44,27 +47,24 @@ import java.util.Map;
 
 @Service("TraderService")
 @CacheConfig(cacheNames = "trader")
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class TraderYJBService implements TraderService, InitializingBean {
     private static final Logger log = LoggerFactory.getLogger(TraderYJBService.class);
     @Autowired
     TraderRepository traderRepository;
     @Autowired
     ObjectMapper jacksonObjectMapper;
-
     String userAgent = "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET4.0C; .NET4.0E)";
-
     @Override
     @Cacheable(value = "trader", key = "#id")
     public Boolean exists(Long id) {
         return traderRepository.exists(id);
     }
-
     @Override
     @CacheEvict(allEntries = true)
     public void save(Trader entity) {
         traderRepository.save(entity);
     }
-
     BasicCookieStore cookieStore;
     TraderSession entity ;
     @Override
@@ -85,7 +85,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
         }*/
     }
 
-    @Scheduled(cron = "0/10 20 9,15 * * ?")
+    @Scheduled(cron = "0/10 * 9-15 * * ?")
     public void balance() {
         try {
             CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore)
@@ -95,9 +95,13 @@ public class TraderYJBService implements TraderService, InitializingBean {
             CloseableHttpResponse response3 = httpclient.execute(httpget3);
             HttpEntity entity = response3.getEntity();
             String result = IOUtils.toString(entity.getContent(), "UTF-8");
-            log.info(result);
-         /*   Map map = jacksonObjectMapper.readValue(entity.getContent(), Map.class);
-            if (map.get("msg_no") != "0") {
+            if(result.indexOf("msg_no: '0'")>0){
+                login();
+            }
+
+         /*   log.info(result);
+            YJBResult bean = jacksonObjectMapper.readValue(result, YJBResult.class);
+            if (!bean.getReturnJson().getMsgNo().equals("0")) {
                 login();
             }*/
             EntityUtils.consume(entity);
@@ -106,7 +110,6 @@ public class TraderYJBService implements TraderService, InitializingBean {
         }
         //System.out.println("result:" +result);
     }
-
     public void login() {
         try {
             long start = System.currentTimeMillis();
@@ -122,7 +125,6 @@ public class TraderYJBService implements TraderService, InitializingBean {
                 EntityUtils.consume(entity3);
                 MyCheckCodeTool tool = new MyCheckCodeTool("guojin");
                 String code = tool.getCheckCode_from_image(image);
-
                 HttpUriRequest login = RequestBuilder.post()
                         .setUri(new URI("https://jy.yongjinbao.com.cn/winner_gj/gjzq/exchange.action"))
                         .addParameter("function_id", "200")
@@ -132,8 +134,8 @@ public class TraderYJBService implements TraderService, InitializingBean {
                         .addParameter("remember_me", "")
                         .addParameter("input_content", "1")
                         .addParameter("content_type", "0")
-                        .addParameter("account_content", "40128457")
-                        .addParameter("password", "A+9BQUFnQUJBQUJRQWdxZXI3Qkh0SDRmZXg5alYvK1VVOFVPUGc0Q3NZdEljcU5aeERtTUtYL3R5bQ==")
+                        .addParameter("account_content", "40132172")
+                        .addParameter("password", "A+9BQUFnQUJBQUFnQVRuZnNuOE1ZTEJjOEJRWlE4VU9QZzRDc1l0Skx2VjlKUGFQZ1dabjZBdDJmNQ==")
                         .addParameter("loginPasswordType", "B64")
                         .addParameter("validateCode", code)
                         .addParameter("mac_addr", "54-59-57-07-B9-0F")
@@ -231,11 +233,12 @@ public class TraderYJBService implements TraderService, InitializingBean {
     }
 
 
-    public static void main(String[] args) throws ParseException, IOException {
+  /*  public static void main(String[] args) throws ParseException, IOException {
         TraderYJBService service = new TraderYJBService();
         try {
             service.afterPropertiesSet();
-            service.login();
+            service.jacksonObjectMapper = new ObjectMapper();
+            //service.login();
             service.balance();
         } catch (URISyntaxException e) {
             e.printStackTrace();
@@ -243,7 +246,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
             e.printStackTrace();
         }
 
-    }
+    }*/
 
  /*   @CacheEvict(value="trader",key="#id")
     public void delete(Long id){

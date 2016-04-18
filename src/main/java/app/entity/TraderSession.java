@@ -23,6 +23,8 @@ public class TraderSession implements Serializable {
     private String szAccount;
     private String shAccount;
 
+
+
 /*
     @LastModifiedDate
     @Column(name = "last_update_time")

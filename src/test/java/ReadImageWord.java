@@ -1,11 +1,8 @@
 import cn.skypark.code.MyCheckCodeTool;
-import com.sun.imageio.plugins.common.ImageUtil;
-import org.apache.commons.io.IOUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
 
