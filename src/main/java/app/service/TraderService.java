@@ -10,9 +10,8 @@ import org.springframework.cache.annotation.Cacheable;
 public interface TraderService {
 
 
-    Boolean exists(Long id);
-
+    //Boolean exists(Long id);
     void save(Trader entity);
-
+    Trader findOne(Long id);
     void trading(String market, Long id, String code, Integer amount, String price, String type, Boolean fast);
 }

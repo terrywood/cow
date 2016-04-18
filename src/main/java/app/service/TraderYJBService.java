@@ -1,12 +1,10 @@
 package app.service;
 
-import app.bean.YJBResult;
 import app.entity.Trader;
 import app.entity.TraderSession;
 import app.repository.TraderRepository;
 import cn.skypark.code.MyCheckCodeTool;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -22,31 +20,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.annotation.Schedules;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.text.ParseException;
 import java.util.List;
-import java.util.Map;
 
 
 @Service("TraderService")
-@CacheConfig(cacheNames = "trader")
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 public class TraderYJBService implements TraderService, InitializingBean {
     private static final Logger log = LoggerFactory.getLogger(TraderYJBService.class);
@@ -55,16 +41,26 @@ public class TraderYJBService implements TraderService, InitializingBean {
     @Autowired
     ObjectMapper jacksonObjectMapper;
     String userAgent = "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET4.0C; .NET4.0E)";
-    @Override
-    @Cacheable(value = "trader", key = "#id")
+
+/*    @Override
     public Boolean exists(Long id) {
         return traderRepository.exists(id);
-    }
+    }*/
+
+
     @Override
-    @CacheEvict(allEntries = true)
+    @CacheEvict(value = "traderCache",allEntries = true)
     public void save(Trader entity) {
         traderRepository.save(entity);
     }
+
+    @Override
+    @Cacheable(value="traderCache")
+    public Trader findOne(Long id) {
+        System.out.println("get by db ["+id+"]");
+        return traderRepository.findOne(id);
+    }
+
     BasicCookieStore cookieStore;
     TraderSession entity ;
     @Override
@@ -95,7 +91,8 @@ public class TraderYJBService implements TraderService, InitializingBean {
             CloseableHttpResponse response3 = httpclient.execute(httpget3);
             HttpEntity entity = response3.getEntity();
             String result = IOUtils.toString(entity.getContent(), "UTF-8");
-            if(result.indexOf("msg_no: '0'")>0){
+            //log.info(result);
+            if(result.indexOf("msg_no: '0'")==-1){
                 login();
             }
 
@@ -178,7 +175,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
 
     @Override
     public void trading(String market, Long id, String code, Integer amount, String price, String type, Boolean fast) {
-        if (!exists(id)) {
+       // if (findOne(id)==null) {
             String account = null;
             String requestId = null;
             String remark = null;
@@ -229,7 +226,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
             trader.setFast(fast);
             trader.setRemark(remark);
             save(trader);
-        }
+       // }
     }
 
 

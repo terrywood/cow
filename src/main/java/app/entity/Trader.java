@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Date;
  */
 @Entity
 @Data
-public class Trader {
+public class Trader implements Serializable {
     @Id
     public Long delegateID;
     @LastModifiedDate

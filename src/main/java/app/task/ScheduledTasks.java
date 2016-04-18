@@ -37,9 +37,9 @@ public class ScheduledTasks {
     /*guo jin*/
     // String  userId = "605166";
     //*terry*/
-    //String userId = "607955";
+    String userId = "607955";
     //阿勤
-    String userId = "773183";
+  //  String userId = "773183";
     public void stockListItem(StockListData stockList) throws IOException {
         URL url = new URL("https://swww.niuguwang.com/tr/201411/stocklistitem.ashx?id=" + stockList.getListID() + "&s=xiaomi&version=3.4.4&packtype=1");
         StockList bean = jacksonObjectMapper.readValue(url, StockList.class);
@@ -57,7 +57,9 @@ public class ScheduledTasks {
                     result = String.format("%.2f", price);
                 }
                 //call 券商API
-                traderService.trading(stockList.getMarket(), data.getDelegateID(), stockList.getStockCode(), amount, result, type, false);
+                if(traderService.findOne(data.getDelegateID())==null){
+                    traderService.trading(stockList.getMarket(), data.getDelegateID(), stockList.getStockCode(), amount, result, type, false);
+                }
                 historyDataRepository.save(data);
 
             }
@@ -89,7 +91,9 @@ public class ScheduledTasks {
                 //List list = bean.getStockListData();
                 for (DelegateData data : bean.getDelegateData()) {
                     int amount = 100;
-                    traderService.trading(data.getMarket(), data.getDelegateID(), data.getStockCode(), amount, data.getDelegateUnitPrice(), data.getDelegateType(), true);
+                    if(traderService.findOne(data.getDelegateID())==null){
+                        traderService.trading(data.getMarket(), data.getDelegateID(), data.getStockCode(), amount, data.getDelegateUnitPrice(), data.getDelegateType(), true);
+                    }
                 }
                 //handle clear stock
                 List<StockListData> list = stockListService.findByAccountID(userId);
