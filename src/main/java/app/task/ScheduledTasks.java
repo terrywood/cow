@@ -91,6 +91,7 @@ public class ScheduledTasks {
                 //List list = bean.getStockListData();
                 for (DelegateData data : bean.getDelegateData()) {
                     int amount = 100;
+                    //System.out.println("DelegateData ->"+data.getDelegateID() );
                     if(traderService.findOne(data.getDelegateID())==null){
                         traderService.trading(data.getMarket(), data.getDelegateID(), data.getStockCode(), amount, data.getDelegateUnitPrice(), data.getDelegateType(), true);
                     }

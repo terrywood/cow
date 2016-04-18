@@ -174,6 +174,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
     }
 
     @Override
+    @CacheEvict(value = "traderCache",allEntries = true)
     public void trading(String market, Long id, String code, Integer amount, String price, String type, Boolean fast) {
        // if (findOne(id)==null) {
             String account = null;
@@ -225,7 +226,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
             trader.setCode(code);
             trader.setFast(fast);
             trader.setRemark(remark);
-            save(trader);
+            this.save(trader);
        // }
     }
 

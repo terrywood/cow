@@ -25,7 +25,7 @@ public class Trader implements Serializable {
     public Float transactionUnitPrice;
     public String code;
     public Boolean fast;
-    @Column(length = 500)
+    @Column(length = 1000)
     public String remark;
     @PrePersist
     void prePersist(){
