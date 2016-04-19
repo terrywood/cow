@@ -1,12 +1,16 @@
 package app.service;
 
+import app.bean.YJBResult;
 import app.entity.Trader;
 import app.entity.TraderSession;
 import app.repository.TraderRepository;
 import cn.skypark.code.MyCheckCodeTool;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.ParseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -28,8 +32,12 @@ import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Service("TraderService")
@@ -60,16 +68,26 @@ public class TraderYJBService implements TraderService, InitializingBean {
         System.out.println("get by db ["+id+"]");
         return traderRepository.findOne(id);
     }
-
     BasicCookieStore cookieStore;
     TraderSession entity ;
     @Override
     public void afterPropertiesSet() throws Exception {
         this.cookieStore = new BasicCookieStore();
         this.entity= new TraderSession();
+        entity.setBrand("yjb");
         entity.setShAccount("A491467753");
         entity.setSzAccount("0126862343");
-/*        try {
+
+        //guo jin
+        /*
+        entity.setSid("40132172");
+        entity.setPassword("A+9BQUFnQUJBQUFnQVRuZnNuOE1ZTEJjOEJRWlE4VU9QZzRDc1l0Skx2VjlKUGFQZ1dabjZBdDJmNQ==");
+        */
+
+        entity.setSid("40128457");
+        entity.setPassword("A+9BQUFnQUJBQUJRQ0VuWlY4UlNrMjh0RlVVOEN5dFpzOFVPUGc0Q3NZdEJVRHRaSlJMeUFQM2taSw==");
+
+/*     try {
             File file  = ResourceUtils.getFile("classpath:yjb.json");
             System.out.println(file.getAbsolutePath());
             System.out.println(file.exists());
@@ -107,6 +125,31 @@ public class TraderYJBService implements TraderService, InitializingBean {
         }
         //System.out.println("result:" +result);
     }
+
+
+    //{"login_type":null,"returnJson":"{function_id: '403', msg_info: '', msg_no: '0', error_grids: '', grid_count: '1', Func403: [{position_str: '定位串', stock_code: '证券代码', stock_name: '证券名称', current_amount: '当前数量', enable_amount: '可卖数量', last_price: '最新价', cost_price: '摊薄成本价', keep_cost_price: '保本价', income_balance: '摊薄浮动盈亏', market_value: '证券市值'},{position_str: '', stock_code: '', stock_name: '', current_amount:'', enable_amount:'', last_price:'', cost_price:'', keep_cost_price:'', income_balance:'', market_value:''}], end: '0' }"}
+
+   // @Scheduled(cron = "0/10 * 9-15 * * ?")
+    public void position() {
+        try {
+            CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore)
+                    .setUserAgent(userAgent)
+                    .build();
+            HttpGet httpget3 = new HttpGet("https://jy.yongjinbao.com.cn/winner_gj/gjzq/stock/exchange.action?service_type=stock&request_id=mystock_403&sort_direction=0");
+            CloseableHttpResponse response3 = httpclient.execute(httpget3);
+            HttpEntity entity = response3.getEntity();
+            String result = IOUtils.toString(entity.getContent(), "UTF-8");
+            //log.info(result);
+            if(result.indexOf("msg_no: '0'")==-1){
+                login();
+            }
+
+            EntityUtils.consume(entity);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //System.out.println("result:" +result);
+    }
     public void login() {
         try {
             long start = System.currentTimeMillis();
@@ -131,8 +174,8 @@ public class TraderYJBService implements TraderService, InitializingBean {
                         .addParameter("remember_me", "")
                         .addParameter("input_content", "1")
                         .addParameter("content_type", "0")
-                        .addParameter("account_content", "40132172")
-                        .addParameter("password", "A+9BQUFnQUJBQUFnQVRuZnNuOE1ZTEJjOEJRWlE4VU9QZzRDc1l0Skx2VjlKUGFQZ1dabjZBdDJmNQ==")
+                        .addParameter("account_content", entity.getSid())
+                        .addParameter("password", entity.getPassword())
                         .addParameter("loginPasswordType", "B64")
                         .addParameter("validateCode", code)
                         .addParameter("mac_addr", "54-59-57-07-B9-0F")
@@ -232,20 +275,33 @@ public class TraderYJBService implements TraderService, InitializingBean {
     }
 
 
-  /*  public static void main(String[] args) throws ParseException, IOException {
+ public static void main(String[] args) throws ParseException, IOException {
         TraderYJBService service = new TraderYJBService();
         try {
             service.afterPropertiesSet();
             service.jacksonObjectMapper = new ObjectMapper();
-            //service.login();
-            service.balance();
+       /*     service.login();
+            service.balance();*/
+            //{"login_type":null,"returnJson":"{function_id: '405', msg_info: '', msg_no: '0', error_grids: '', grid_count: '1', Func405: [{money_type: '币种', current_balance: '当前余额', enable_balance: '可用金额', market_value: '证券市值', asset_balance: '资产总值', pre_interest: '预计利息'},{money_type:'人民币', current_balance:'0.000', enable_balance:'523267.640', market_value:'0.000', asset_balance:'523267.640', pre_interest:'0.010'}], end: '0' }"}
+
+
+           /* String str ="{\"login_type\":null,\"returnJson\":\"{function_id: '405', msg_info: '', msg_no: '0', error_grids: '', grid_count: '1', Func405: [{money_type: '币种', current_balance: '当前余额', enable_balance: '可用金额', market_value: '证券市值', asset_balance: '资产总值', pre_interest: '预计利息'},{money_type:'人民币', current_balance:'0.000', enable_balance:'523267.640', market_value:'0.000', asset_balance:'523267.640', pre_interest:'0.010'}], end: '0' }\"}";
+            service.jacksonObjectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+            service.jacksonObjectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+            Map  map = service.jacksonObjectMapper.readValue(str,new TypeReference<HashMap<String,String>>(){});
+            String returnJson  = (String)map.get("returnJson");
+            Map map2 =service.jacksonObjectMapper.readValue(returnJson,Map.class);
+            List<Map> list = (List<Map>) map2.get("Func405");
+            System.out.println(list.get(1).get("enable_balance"));*/
+
+
         } catch (URISyntaxException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-    }*/
+    }
 
  /*   @CacheEvict(value="trader",key="#id")
     public void delete(Long id){

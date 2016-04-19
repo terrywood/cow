@@ -16,12 +16,16 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Data
 public class TraderSession implements Serializable {
+
     @Id
     private String sid;
-    @Column(length = 500)
-    private String cookie;
     private String szAccount;
     private String shAccount;
+    private String password;
+    private String brand;
+    @Column(length = 500)
+    private String cookie;
+
 
 
 
