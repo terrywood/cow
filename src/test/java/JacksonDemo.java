@@ -1,5 +1,5 @@
 import app.entity.TraderSession;
-import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 
@@ -7,14 +7,32 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.List;
 
 public class JacksonDemo {
     public static void main(String[] args) throws ParseException, IOException {
-    /*    ObjectMapper mapper = new ObjectMapper();
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        ObjectMapper mapper = new ObjectMapper();
+        //mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+        mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES,true);
+        String str ="{\"login_type\":null,\"returnJson\":\"{function_id: '401', msg_info: '', msg_no: '0', error_grids: '', grid_count: '1', Func401: [{ entrust_no: '委托编号', stock_code: '证券代码', entrust_bs: '买卖方向', entrust_price: '委托价格', entrust_amount: '委托数量', business_amount: '成交数量', business_price: '成交价格', report_time: '申报时间', entrust_status: '委托状态', stock_name: '证券名称'},{ entrust_no: '', stock_code: '', entrust_bs: '', entrust_price:'', entrust_amount:'', business_amount:'', business_price:'', report_time: '', entrust_status: '', stock_name: ''}], end: '0' }\"}";
+
+
+
+        str = (str.substring(124,str.length()-14));
+        System.out.println(str);
+
+        List yjbEntrustResult =mapper.readValue(str, List.class);
+        for(int i =0 ;i<yjbEntrustResult.size();i++){
+            System.out.println(yjbEntrustResult.get(i));
+        }
+
+     /*   for(YJBEntrust obj : yjbEntrustResult.getList()){
+            System.out.println(obj.getEntrust_no());
+        }
 */
         JacksonDemo demo = new JacksonDemo();
-        demo.connectGf();
+       // demo.connectGf();
     }
 
 
