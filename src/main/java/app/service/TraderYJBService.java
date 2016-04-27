@@ -27,10 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.util.NumberUtils;
-import org.thymeleaf.util.MapUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -42,6 +41,7 @@ import java.util.Map;
 
 @Service("TraderService")
 @EnableAspectJAutoProxy(proxyTargetClass = true)
+@Lazy(value = false)
 public class TraderYJBService implements TraderService, InitializingBean {
     private static final Logger log = LoggerFactory.getLogger(TraderYJBService.class);
     @Autowired
@@ -87,6 +87,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
         entity.setSid("40132172");
         entity.setPassword("A+9BQUFnQUJBQUFnQVRuZnNuOE1ZTEJjOEJRWlE4VU9QZzRDc1l0Skx2VjlKUGFQZ1dabjZBdDJmNQ==");
 
+        System.out.println("yjbAccount afterPropertiesSet begin-----------------------------");
 /*
 
        entity.setSid("40128457");
@@ -105,33 +106,37 @@ public class TraderYJBService implements TraderService, InitializingBean {
         }*/
     }
 
-    @Scheduled(cron = "0/30 * 9-15 * * ?")
-    public void currentDeal() {
+
+    //@Scheduled(cron = "0/1 * 9-20 * * ?")
+    //@Scheduled(cron = "0/15 * 9-20 * * ?")
+    @Scheduled(cron = "0/15 * 9-19 * * MON-FRI")
+    public void yjbAccount() {
+        System.out.println("yjbAccount cron job begin-----------------------------");
+
         try {
             CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore)
                     .setUserAgent(userAgent)
                     .build();
-           // HttpGet httpget = new HttpGet("https://jy.yongjinbao.com.cn/winner_gj/gjzq/stock/exchange.action?CSRF_Token=undefined&timestamp=0.14061450277594495&service_type=stock&deliver_type=&sort_direction=1&request_id=trust_401");
             HttpGet httpget = new HttpGet("https://jy.yongjinbao.com.cn/winner_gj/gjzq/stock/exchange.action?CSRF_Token=undefined&service_type=stock&sort_direction=0&request_id=mystock_403");
             CloseableHttpResponse response = httpclient.execute(httpget);
             HttpEntity entity = response.getEntity();
             String result = IOUtils.toString(entity.getContent(), "UTF-8");
-           // log.info(result);
-           if(result.indexOf("msg_no: '0'")==-1){
+           //  log.info(result);
+            if(result.indexOf("msg_no: '0'")==-1){
                 login();
             }else{
-               String str = "["+(result.substring(346,result.length()-14));
-               //System.out.println(str);
-               if(str.length()>50){
-                   List<YJBAccount> list =jacksonObjectMapper.readValue(str, new TypeReference<List<YJBAccount>>() {});
-                   if(list.size()>1){
-                       for(YJBAccount bean : list){
-                           //System.out.println(bean);
-                           yjbAccountMap.put(bean.getStockCode(),bean);
-                       }
-                   }
-               }
-           }
+                String str = "["+(result.substring(346,result.length()-14));
+                //System.out.println(str);
+                if(str.length()>50){
+                    List<YJBAccount> list =jacksonObjectMapper.readValue(str, new TypeReference<List<YJBAccount>>() {});
+                    if(list.size()>1){
+                        for(YJBAccount bean : list){
+                            //System.out.println(bean);
+                            yjbAccountMap.put(bean.getStockCode(),bean);
+                        }
+                    }
+                }
+            }
             EntityUtils.consume(entity);
         } catch (Exception e) {
             e.printStackTrace();
@@ -139,9 +144,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
     }
 
 
-    //@Scheduled(cron = "0/1 * 9-15 * * ?")
-
-    @Scheduled(cron = "0 0/2 9-15 * * ?")
+    @Scheduled(cron = "0 0/2 9-19 * * MON-FRI")
     public void balance() {
         try {
             CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore)
@@ -156,9 +159,11 @@ public class TraderYJBService implements TraderService, InitializingBean {
                 login();
             }*/
             str = (str.substring(260,str.length()-15));
+            log.info("yjb balance result :"+ str);
             YJBBalance yjbBalance = this.jacksonObjectMapper.readValue(str, YJBBalance.class);
             this.yjbBalance = yjbBalance.getEnableBalance();
-            System.out.println(this.yjbBalance);
+            //log.info("yjb balance : "+this.yjbBalance);
+            //log.info("yjb yjbAccountMap : "+this.yjbAccountMap);
             EntityUtils.consume(entity);
         } catch (Exception e) {
             e.printStackTrace();
@@ -260,74 +265,74 @@ public class TraderYJBService implements TraderService, InitializingBean {
     @Override
     @CacheEvict(value = "traderCache",allEntries = true)
     public void trading(String market, Long id, String code, Integer amount, String price, String type, Boolean fast) {
-       // if (findOne(id)==null) {
-            String account = null;
-            String requestId = null;
-            String remark = null;
-            if (market.equals("2")) {
-                account = entity.getSzAccount();
-            } else {
-                account = entity.getShAccount();
+        // if (findOne(id)==null) {
+        String account = null;
+        String requestId = null;
+        String remark = null;
+        if (market.equals("2")) {
+            account = entity.getSzAccount();
+        } else {
+            account = entity.getShAccount();
+        }
+        if(type.equals("1")){
+            requestId ="buystock_302";
+            Double balance = 2500d;
+            if(yjbBalance<2500d && yjbBalance>0d){
+                balance = yjbBalance;
             }
-            if(type.equals("1")){
-                requestId ="buystock_302";
-                Double balance = 2500d;
-                if(yjbBalance<2500d && yjbBalance>0d){
-                    balance = yjbBalance;
-                }
-                Double a = ((balance/Double.valueOf(price)) /100d) ;
-                amount = a.intValue()*100;
+            Double a = ((balance/Double.valueOf(price)) /100d) ;
+            amount = a.intValue()*100;
 
-            }else{
-                requestId ="sellstock_302";
-                YJBAccount yjbAccount =yjbAccountMap.get(code);
-                if(yjbAccount!=null){
-                    amount = yjbAccount.getEnableAmount();
-                    yjbAccountMap.remove(code);
-                }
-
-
+        }else{
+            requestId ="sellstock_302";
+            YJBAccount yjbAccount =yjbAccountMap.get(code);
+            if(yjbAccount!=null){
+                amount = yjbAccount.getEnableAmount();
+                yjbAccountMap.remove(code);
             }
-            try {
-                CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore)
-                        .setUserAgent(userAgent)
-                        .build();
-                HttpUriRequest trading = RequestBuilder.get()
-                        .setUri(new URI("https://jy.yongjinbao.com.cn/winner_gj/gjzq/stock/exchange.action"))
-                        .addParameter("CSRF_Token", "undefined")
-                        .addParameter("timestamp", "0.828934287885204")
-                        .addParameter("request_id", requestId)
-                        .addParameter("stock_account", account)
-                        .addParameter("exchange_type", market)
-                        .addParameter("entrust_prop", "0")
-                        .addParameter("entrust_bs", type)
-                        .addParameter("stock_code",code )
-                        .addParameter("entrust_price",price )
-                        .addParameter("entrust_amount",String.valueOf(amount) )
-                        .addParameter("elig_riskmatch_flag","1" )
-                        .addParameter("service_type","stock" )
-                       // .setHeader("Referer", "https://jy.yongjinbao.com.cn/winner_gj/gjzq/stock/buystock.html")
-                        .build();
 
-                CloseableHttpResponse response3 = httpclient.execute(trading);
-                HttpEntity entity = response3.getEntity();
-                remark = IOUtils.toString(entity.getContent(), "UTF-8");
-                System.out.println(remark);
-                EntityUtils.consume(entity);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            Trader trader = new Trader();
-            trader.setType(type);
-            trader.setDelegateID(id);
-            trader.setTransactionAmount(amount);
-            trader.setTransactionUnitPrice(Float.valueOf(price));
-            trader.setCode(code);
-            trader.setFast(fast);
-            trader.setRemark(remark);
-            this.save(trader);
 
-       // }
+        }
+        try {
+            CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore)
+                    .setUserAgent(userAgent)
+                    .build();
+            HttpUriRequest trading = RequestBuilder.get()
+                    .setUri(new URI("https://jy.yongjinbao.com.cn/winner_gj/gjzq/stock/exchange.action"))
+                    .addParameter("CSRF_Token", "undefined")
+                    .addParameter("timestamp", "0.828934287885204")
+                    .addParameter("request_id", requestId)
+                    .addParameter("stock_account", account)
+                    .addParameter("exchange_type", market)
+                    .addParameter("entrust_prop", "0")
+                    .addParameter("entrust_bs", type)
+                    .addParameter("stock_code",code )
+                    .addParameter("entrust_price",price )
+                    .addParameter("entrust_amount",String.valueOf(amount) )
+                    .addParameter("elig_riskmatch_flag","1" )
+                    .addParameter("service_type","stock" )
+                    // .setHeader("Referer", "https://jy.yongjinbao.com.cn/winner_gj/gjzq/stock/buystock.html")
+                    .build();
+
+            CloseableHttpResponse response3 = httpclient.execute(trading);
+            HttpEntity entity = response3.getEntity();
+            remark = IOUtils.toString(entity.getContent(), "UTF-8");
+            System.out.println(remark);
+            EntityUtils.consume(entity);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Trader trader = new Trader();
+        trader.setType(type);
+        trader.setDelegateID(id);
+        trader.setTransactionAmount(amount);
+        trader.setTransactionUnitPrice(Float.valueOf(price));
+        trader.setCode(code);
+        trader.setFast(fast);
+        trader.setRemark(remark);
+        this.save(trader);
+
+        // }
     }
 
 /*

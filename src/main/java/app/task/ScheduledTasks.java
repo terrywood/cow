@@ -82,6 +82,7 @@ public class ScheduledTasks {
 
     @Scheduled(fixedDelay = 1)
     public void init() {
+
         if (isTradeDayTimeByMarket()) {
             long times = System.currentTimeMillis();
             URL url = null;
@@ -89,9 +90,9 @@ public class ScheduledTasks {
                 url = new URL("https://swww.niuguwang.com/tr/201411/account.ashx?aid=" + userId + "&s=xiaomi&version=3.4.4&packtype=1");
                 Account bean = jacksonObjectMapper.readValue(url, Account.class);
                 //List list = bean.getStockListData();
+
                 for (DelegateData data : bean.getDelegateData()) {
                     int amount = 100;
-                    //System.out.println("DelegateData ->"+data.getDelegateID() );
                     if(traderService.findOne(data.getDelegateID())==null){
                         traderService.trading(data.getMarket(), data.getDelegateID(), data.getStockCode(), amount, data.getDelegateUnitPrice(), data.getDelegateType(), true);
                     }
@@ -119,14 +120,10 @@ public class ScheduledTasks {
                     Long id = data.getListID();
                     StockListData entity = stockListService.findOne(id);
                     if (entity == null) {
-                        //System.out.println("null");
                         stockListItem(data);
                         stockListService.save(data);
                     } else {
-                        //System.out.println("yes");
                         long lastTrading = data.getLastTradingTime().getTime();
-                        //  long lastTrading2 = entity.getLastTradingTime().getTime();
-                        //  System.out.println("lastTrading["+lastTrading+"] - lastTrading2["+lastTrading2+"]");
                         if (entity.getLastTradingTime().getTime() != lastTrading) {
                             stockListItem(data);
                             stockListService.save(data);
@@ -135,7 +132,6 @@ public class ScheduledTasks {
                 }
 
 
-                 //System.out.println("use [" + (times - System.currentTimeMillis()) + "] ms");
             } catch (IOException e) {
                 e.printStackTrace();
                 try {
@@ -159,7 +155,7 @@ public class ScheduledTasks {
     }
 
     public boolean isTradeDayTimeByMarket() {
-     /*   if (1 == 1) {
+  /*   if (1 == 1) {
             try {
                 Thread.sleep(2000); //sleep 5 sec
             } catch (InterruptedException e) {
@@ -167,6 +163,7 @@ public class ScheduledTasks {
             }
             return true;
         }*/
+
         Calendar cal = Calendar.getInstance();
         int hour = cal.get(Calendar.HOUR_OF_DAY);
         int minute = cal.get(Calendar.MINUTE);
