@@ -89,33 +89,17 @@ public class TraderYJBService implements TraderService, InitializingBean {
         //guo jin
         entity.setSid("40132172");
         entity.setPassword("A+9BQUFnQUJBQUFnQVRuZnNuOE1ZTEJjOEJRWlE4VU9QZzRDc1l0Skx2VjlKUGFQZ1dabjZBdDJmNQ==");
-
         System.out.println("yjbAccount afterPropertiesSet begin-----------------------------");
 /*
 
-       entity.setSid("40128457");
+        entity.setSid("40128457");
         entity.setPassword("A+9BQUFnQUJBQUJRQ0VuWlY4UlNrMjh0RlVVOEN5dFpzOFVPUGc0Q3NZdEJVRHRaSlJMeUFQM2taSw==");
 */
-
-/*     try {
-            File file  = ResourceUtils.getFile("classpath:yjb.json");
-            System.out.println(file.getAbsolutePath());
-            System.out.println(file.exists());
-            System.out.println("-----------------TraderYJBService----------------end"+jacksonObjectMapper);
-            Map map = jacksonObjectMapper.readValue( file,java.util.Map.class);
-            System.out.println(map);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
     }
 
 
-    //@Scheduled(cron = "0/1 * 9-20 * * ?")
-    //@Scheduled(cron = "0/15 * 9-20 * * ?")
     @Scheduled(cron = "0/15 * 9-19 * * MON-FRI")
     public void yjbAccount() {
-        System.out.println("yjbAccount cron job begin-----------------------------");
-
         try {
             CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore)
                     .setUserAgent(userAgent)
@@ -124,7 +108,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
             CloseableHttpResponse response = httpclient.execute(httpget);
             HttpEntity entity = response.getEntity();
             String result = IOUtils.toString(entity.getContent(), "UTF-8");
-            //  log.info(result);
+            //log.info(result);
             if (result.indexOf("msg_no: '0'") == -1) {
                 login();
             } else {
@@ -163,7 +147,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
                 login();
             }*/
             str = (str.substring(260, str.length() - 15));
-            log.info("yjb balance result :" + str);
+            //log.info("yjb balance result :" + str);
             YJBBalance yjbBalance = this.jacksonObjectMapper.readValue(str, YJBBalance.class);
             this.yjbBalance = yjbBalance.getEnableBalance();
             //log.info("yjb balance : "+this.yjbBalance);
@@ -288,12 +272,18 @@ public class TraderYJBService implements TraderService, InitializingBean {
             amount = a.intValue() * 100;
 
         } else {
+            log.info("-------------sell-----------sell--------------");
+            System.out.println(yjbAccountMap);
             requestId = "sellstock_302";
             YJBAccount yjbAccount = yjbAccountMap.get(code);
             if (yjbAccount != null) {
                 amount = yjbAccount.getEnableAmount();
                 yjbAccountMap.remove(code);
+                System.out.println("stock amount in yjb is "+amount);
+            }else{
+                System.out.println("cant not find stock in yjb");
             }
+
         }
 
         if (amount > 0) {
@@ -304,7 +294,6 @@ public class TraderYJBService implements TraderService, InitializingBean {
                 HttpUriRequest trading = RequestBuilder.get()
                         .setUri(new URI("https://jy.yongjinbao.com.cn/winner_gj/gjzq/stock/exchange.action"))
                         .addParameter("CSRF_Token", "undefined")
-                        //.addParameter("timestamp", "0.828934287885204")
                         .addParameter("request_id", requestId)
                         .addParameter("stock_account", account)
                         .addParameter("exchange_type", market)
@@ -317,11 +306,15 @@ public class TraderYJBService implements TraderService, InitializingBean {
                         .addParameter("service_type", "stock")
                         // .setHeader("Referer", "https://jy.yongjinbao.com.cn/winner_gj/gjzq/stock/buystock.html")
                         .build();
+
+
                 CloseableHttpResponse response3 = httpclient.execute(trading);
                 HttpEntity entity = response3.getEntity();
                 remark = IOUtils.toString(entity.getContent(), "UTF-8");
                 System.out.println(remark);
                 EntityUtils.consume(entity);
+
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

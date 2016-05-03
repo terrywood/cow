@@ -37,10 +37,12 @@ public class ScheduledTasks {
     /*guo jin*/
     // String  userId = "605166";
     //*terry*/
-  //String userId = "607955";
+    //String userId = "607955";
+
     //阿勤
     String userId = "773183";
     public void stockListItem(StockListData stockList) throws IOException {
+        int amount = 100;
         URL url = new URL("https://swww.niuguwang.com/tr/201411/stocklistitem.ashx?id=" + stockList.getListID() + "&s=xiaomi&version=3.4.4&packtype=1");
         StockList bean = jacksonObjectMapper.readValue(url, StockList.class);
         for (HistoryData data : bean.getHistoryData()) {
@@ -48,7 +50,7 @@ public class ScheduledTasks {
                 String type = data.getType();
                 Float price =  data.getTransactionUnitPrice() ;
                 String result = String.valueOf(price);
-                int amount = 100;
+
             /*    if (type.equals("1")) {
                     price = data.getTransactionUnitPrice() * 1.025f;
                     result = String.format("%.2f", price);
@@ -84,15 +86,14 @@ public class ScheduledTasks {
     public void init() {
 
         if (isTradeDayTimeByMarket()) {
+            int amount = 100;
             long times = System.currentTimeMillis();
             URL url = null;
             try {
                 url = new URL("https://swww.niuguwang.com/tr/201411/account.ashx?aid=" + userId + "&s=xiaomi&version=3.4.4&packtype=1");
                 Account bean = jacksonObjectMapper.readValue(url, Account.class);
                 //List list = bean.getStockListData();
-
                 for (DelegateData data : bean.getDelegateData()) {
-                    int amount = 100;
                     if(traderService.findOne(data.getDelegateID())==null){
                         traderService.trading(data.getMarket(), data.getDelegateID(), data.getStockCode(), amount, data.getDelegateUnitPrice(), data.getDelegateType(), true);
                     }
@@ -115,7 +116,6 @@ public class ScheduledTasks {
                     }
                 }
                 //handle update
-
                 for (StockListData data : bean.getStockListData()) {
                     Long id = data.getListID();
                     StockListData entity = stockListService.findOne(id);

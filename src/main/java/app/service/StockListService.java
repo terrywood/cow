@@ -27,13 +27,13 @@ public class StockListService {
 
     @Cacheable(value="movieFindCache")
     public StockListData findOne(Long listID){
-        System.out.println("findOne["+listID+"]");
+        //System.out.println("findOne["+listID+"]");
         return  stockListRepository.findOne(listID);
     }
 
     @Cacheable(value="findByAccountID")
     public List<StockListData> findByAccountID(String accountID){
-        System.out.println("findByAccountID["+accountID+"]");
+       // System.out.println("findByAccountID["+accountID+"]");
         return  stockListRepository.findByAccountID(accountID);
     }
 
@@ -44,7 +44,7 @@ public class StockListService {
 
     @CacheEvict(value = { "movieFindCache", "findByAccountID" }, allEntries = true)
     public void delete(Long listID){
-        System.out.println("delete id ->"+listID);
+        //System.out.println("delete id ->"+listID);
         stockListRepository.delete(listID);
     }
 }
