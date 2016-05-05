@@ -89,7 +89,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
         //guo jin
         entity.setSid("40132172");
         entity.setPassword("A+9BQUFnQUJBQUFnQVRuZnNuOE1ZTEJjOEJRWlE4VU9QZzRDc1l0Skx2VjlKUGFQZ1dabjZBdDJmNQ==");
-        System.out.println("yjbAccount afterPropertiesSet begin-----------------------------");
+       // System.out.println("yjbAccount afterPropertiesSet begin-----------------------------");
 /*
 
         entity.setSid("40128457");
@@ -97,8 +97,16 @@ public class TraderYJBService implements TraderService, InitializingBean {
 */
     }
 
+    @Scheduled(cron = "0/30 * 9-16 * * MON-FRI")
+    public void cornJob(){
+        yjbAccount();
+        balance();
+        log.info("yjb balance : "+this.yjbBalance);
+        log.info("yjb yjbAccountMap : "+this.yjbAccountMap);
 
-    @Scheduled(cron = "0/15 * 9-19 * * MON-FRI")
+    }
+
+
     public void yjbAccount() {
         try {
             CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore)
@@ -113,10 +121,9 @@ public class TraderYJBService implements TraderService, InitializingBean {
                 login();
             } else {
                 String str = "[" + (result.substring(346, result.length() - 14));
-                //System.out.println(str);
+                //log.info(str);
                 if (str.length() > 50) {
-                    List<YJBAccount> list = jacksonObjectMapper.readValue(str, new TypeReference<List<YJBAccount>>() {
-                    });
+                    List<YJBAccount> list = jacksonObjectMapper.readValue(str, new TypeReference<List<YJBAccount>>() {});
                     if (list.size() > 1) {
                         for (YJBAccount bean : list) {
                             //System.out.println(bean);
@@ -132,7 +139,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
     }
 
 
-    @Scheduled(cron = "0 0/2 9-19 * * MON-FRI")
+
     public void balance() {
         try {
             CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore)
@@ -150,8 +157,6 @@ public class TraderYJBService implements TraderService, InitializingBean {
             //log.info("yjb balance result :" + str);
             YJBBalance yjbBalance = this.jacksonObjectMapper.readValue(str, YJBBalance.class);
             this.yjbBalance = yjbBalance.getEnableBalance();
-            //log.info("yjb balance : "+this.yjbBalance);
-            //log.info("yjb yjbAccountMap : "+this.yjbAccountMap);
             EntityUtils.consume(entity);
         } catch (Exception e) {
             e.printStackTrace();

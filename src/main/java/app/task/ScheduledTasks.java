@@ -63,10 +63,8 @@ public class ScheduledTasks {
                     traderService.trading(stockList.getMarket(), data.getDelegateID(), stockList.getStockCode(), amount, result, type, false);
                 }
                 historyDataRepository.save(data);
-
             }
         }
-
     }
 
     /* ObjectMapper mapper = new ObjectMapper();
@@ -74,7 +72,6 @@ public class ScheduledTasks {
        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
        Account user = mapper.readValue(url, Account.class);*//*
-
 */
 
    /* @Scheduled(cron = "0/10 * 9-15 * * ?")
