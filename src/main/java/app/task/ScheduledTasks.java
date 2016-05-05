@@ -10,6 +10,8 @@ import app.service.StockListService;
 import app.service.TraderService;
 import app.service.TraderSessionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -24,6 +26,7 @@ import java.util.List;
 @Component
 @Transactional
 public class ScheduledTasks {
+    private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
     @Autowired
     ObjectMapper jacksonObjectMapper;
     @Autowired
@@ -139,8 +142,7 @@ public class ScheduledTasks {
             }
 
         } else {
-
-            System.out.println(new Date() + "----------------- is not trade Day");
+            log.info("now is not trade Day");
             try {
                 Thread.sleep(1000 * 60 * 10); //sleep 10 min
                 //Thread.sleep(1000); //sleep 10 min

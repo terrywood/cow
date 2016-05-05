@@ -91,7 +91,6 @@ public class TraderYJBService implements TraderService, InitializingBean {
         entity.setPassword("A+9BQUFnQUJBQUFnQVRuZnNuOE1ZTEJjOEJRWlE4VU9QZzRDc1l0Skx2VjlKUGFQZ1dabjZBdDJmNQ==");
        // System.out.println("yjbAccount afterPropertiesSet begin-----------------------------");
 /*
-
         entity.setSid("40128457");
         entity.setPassword("A+9BQUFnQUJBQUJRQ0VuWlY4UlNrMjh0RlVVOEN5dFpzOFVPUGc0Q3NZdEJVRHRaSlJMeUFQM2taSw==");
 */
