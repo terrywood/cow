@@ -100,9 +100,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
     public void cornJob(){
         yjbAccount();
         balance();
-        log.info("yjb balance : "+this.yjbBalance);
-        log.info("yjb yjbAccountMap : "+this.yjbAccountMap);
-
+        log.info("balance : "+this.yjbBalance+" account:"+ yjbAccountMap);
     }
 
 
@@ -120,15 +118,15 @@ public class TraderYJBService implements TraderService, InitializingBean {
                 login();
             } else {
                 String str = "[" + (result.substring(346, result.length() - 14));
-                //log.info(str);
+                //log.info("yo hua:"+str);
                 if (str.length() > 50) {
                     List<YJBAccount> list = jacksonObjectMapper.readValue(str, new TypeReference<List<YJBAccount>>() {});
-                    if (list.size() > 1) {
+                    //if (list.size() > 1) {
                         for (YJBAccount bean : list) {
                             //System.out.println(bean);
                             yjbAccountMap.put(bean.getStockCode(), bean);
                         }
-                    }
+                    //}
                 }
             }
             EntityUtils.consume(entity);
@@ -312,12 +310,11 @@ public class TraderYJBService implements TraderService, InitializingBean {
                         .build();
 
 
-                CloseableHttpResponse response3 = httpclient.execute(trading);
+            /*    CloseableHttpResponse response3 = httpclient.execute(trading);
                 HttpEntity entity = response3.getEntity();
                 remark = IOUtils.toString(entity.getContent(), "UTF-8");
                 System.out.println(remark);
-                EntityUtils.consume(entity);
-
+                EntityUtils.consume(entity);*/
 
             } catch (Exception e) {
                 e.printStackTrace();
