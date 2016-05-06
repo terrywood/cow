@@ -12,6 +12,7 @@ import app.service.TraderSessionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -22,10 +23,11 @@ import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.*;
 
 @Component
 @Transactional
-public class ScheduledTasks {
+public class ScheduledTasks implements InitializingBean {
     private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
     @Autowired
     ObjectMapper jacksonObjectMapper;
@@ -37,13 +39,9 @@ public class ScheduledTasks {
     TraderService traderService;
     @Autowired
     TraderSessionService traderSessionService;
-    /*guo jin*/
-    // String  userId = "605166";
-    //*terry*/
-    //String userId = "607955";
 
-    //阿勤
-    String userId = "773183";
+
+
     public void stockListItem(StockListData stockList) throws IOException {
         int amount = 100;
         URL url = new URL("https://swww.niuguwang.com/tr/201411/stocklistitem.ashx?id=" + stockList.getListID() + "&s=xiaomi&version=3.4.4&packtype=1");
@@ -70,24 +68,38 @@ public class ScheduledTasks {
         }
     }
 
-    /* ObjectMapper mapper = new ObjectMapper();
-       mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-       mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-       mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-       Account user = mapper.readValue(url, Account.class);*//*
-*/
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        ScheduledExecutorService service = Executors.newScheduledThreadPool(10);
+        /*guo jin*/
+        // String  userId = "605166";
+        //*terry*/
+        //String userId = "607955";
+        //阿勤
+        String userId = "773183";
+        service.scheduleWithFixedDelay(new Work(userId),10,1, TimeUnit.MILLISECONDS);
+        //service.scheduleWithFixedDelay(new Work("607955"),10,5, TimeUnit.SECONDS);
 
-   /* @Scheduled(cron = "0/10 * 9-15 * * ?")
-    public void balanceTest() {
-        System.out.println("balanceTest----------------------"+ new Date());
-    }*/
+    }
 
-    @Scheduled(fixedDelay = 1)
-    public void init() {
+    class Work implements Runnable{
+        String userId ;
+        public Work(String userId) {
+            this.userId = userId;
+        }
+        @Override
+        public void run() {
+            init(userId);
+        }
+    }
 
+
+    //@Scheduled(fixedDelay = 1)
+    public void init(String userId) {
+        //log.info("userID:"+userId);
         if (isTradeDayTimeByMarket()) {
             int amount = 100;
-            long times = System.currentTimeMillis();
+            //long times = System.currentTimeMillis();
             URL url = null;
             try {
                 url = new URL("https://swww.niuguwang.com/tr/201411/account.ashx?aid=" + userId + "&s=xiaomi&version=3.4.4&packtype=1");
@@ -178,5 +190,6 @@ public class ScheduledTasks {
         }
         return true;
     }
+
 
 }

@@ -310,11 +310,11 @@ public class TraderYJBService implements TraderService, InitializingBean {
                         .build();
 
 
-            /*    CloseableHttpResponse response3 = httpclient.execute(trading);
+               CloseableHttpResponse response3 = httpclient.execute(trading);
                 HttpEntity entity = response3.getEntity();
                 remark = IOUtils.toString(entity.getContent(), "UTF-8");
                 System.out.println(remark);
-                EntityUtils.consume(entity);*/
+                EntityUtils.consume(entity);
 
             } catch (Exception e) {
                 e.printStackTrace();
