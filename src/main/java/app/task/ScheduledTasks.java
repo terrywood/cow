@@ -106,7 +106,7 @@ public class ScheduledTasks implements InitializingBean {
     }*/
 
 
-   // @Scheduled(fixedDelay = 1)
+    @Scheduled(fixedDelay = 1)
     public synchronized void init() {
         //log.info("userID:"+userId);
         if (isTradeDayTimeByMarket()) {
@@ -174,7 +174,7 @@ public class ScheduledTasks implements InitializingBean {
                 }
             }
         } else {
-            log.info("now is not trade Day []");
+            log.info("now is not trade Day");
             try {
                 Thread.sleep(1000 * 60 * 10); //sleep 10 min
                 //Thread.sleep(1000); //sleep 10 min
