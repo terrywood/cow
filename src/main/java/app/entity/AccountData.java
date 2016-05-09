@@ -6,11 +6,12 @@ import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity
 @Data
-public class AccountData {
+public class AccountData implements Serializable {
     @Id
     @JsonProperty(value = "AccountID")
     private Long accountID;
@@ -43,5 +44,7 @@ public class AccountData {
     @JsonProperty(value = "LastTradeTime")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh" , timezone="GMT+8")
     public Date lastTradingTime;
+
+    public int status;
 }
 

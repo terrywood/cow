@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@Service("TraderService")
+//@Service("TraderService")
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @Lazy(value = false)
 public class TraderYJBService implements TraderService, InitializingBean {
@@ -59,11 +59,11 @@ public class TraderYJBService implements TraderService, InitializingBean {
     //private YJBBalance yjbBalance;
     private Double yjbBalance;
 
-    @Override
+  /*  @Override
     @CacheEvict(value = "traderCache", allEntries = true)
     public void save(Trader entity) {
         traderRepository.save(entity);
-    }
+    }*/
 
     @Override
     @Cacheable(value = "traderCache")
@@ -100,7 +100,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
     public void cornJob(){
         yjbAccount();
         balance();
-        log.info("balance : "+this.yjbBalance+" account:"+ yjbAccountMap);
+       //log.info("balance : "+this.yjbBalance+" account:"+ yjbAccountMap);
     }
 
 
@@ -254,7 +254,6 @@ public class TraderYJBService implements TraderService, InitializingBean {
     @Override
     @CacheEvict(value = "traderCache", allEntries = true)
     public void trading(String market, Long id, String code, Integer _amount, String price, String type, Boolean fast) {
-        // if (findOne(id)==null) {
         String account = null;
         String requestId = null;
         Integer amount = 0;
@@ -306,7 +305,6 @@ public class TraderYJBService implements TraderService, InitializingBean {
                         .addParameter("entrust_amount", String.valueOf(amount))
                         .addParameter("elig_riskmatch_flag", "1")
                         .addParameter("service_type", "stock")
-                        // .setHeader("Referer", "https://jy.yongjinbao.com.cn/winner_gj/gjzq/stock/buystock.html")
                         .build();
 
 
@@ -330,7 +328,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
         trader.setCode(code);
         trader.setFast(fast);
         trader.setRemark(remark);
-        this.save(trader);
+        this.traderRepository.save(trader);
 
         // }
     }
