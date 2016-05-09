@@ -74,7 +74,7 @@ public class ScheduledTasks implements InitializingBean {
         /*guo jin*/
         // String  userId = "605166";
         //*terry*/
-        //String userId = "607955";
+       // String userId = "607955";
         //阿勤
         String userId = "773183";
         service.scheduleWithFixedDelay(new Work(userId),10,1, TimeUnit.MILLISECONDS);
