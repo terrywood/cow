@@ -32,7 +32,7 @@ import java.util.List;
 @Controller
 public class SampleController {
 
-	@Autowired
+	/*@Autowired
 	private StockListService stockListService;
 	@Autowired
 	private TraderSessionService traderSessionService;
@@ -40,7 +40,6 @@ public class SampleController {
 	@ResponseBody
 	@Transactional(readOnly = true)
 	public List<StockListData> helloWorld() {
-        //System.out.println(traderSessionService.getSession());
 		List<StockListData> list = stockListService.findByAccountID("607955");
 		return list;
 	}
@@ -68,7 +67,7 @@ public class SampleController {
 			stockListService.delete(id);
 		}
 		return "OK";
-	}
+	}*/
 
 
 /*

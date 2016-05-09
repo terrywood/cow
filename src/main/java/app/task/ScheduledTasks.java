@@ -106,7 +106,7 @@ public class ScheduledTasks implements InitializingBean {
     }*/
 
 
-    @Scheduled(fixedDelay = 1)
+   // @Scheduled(fixedDelay = 1)
     public synchronized void init() {
         //log.info("userID:"+userId);
         if (isTradeDayTimeByMarket()) {
@@ -160,7 +160,7 @@ public class ScheduledTasks implements InitializingBean {
                                 System.out.println("go 6");
                                 stockListItem(data);
                                 System.out.println("go 7");
-                                stockListService.save(data);
+                                stockListService.update(data);
                             }
                         }
                     }

@@ -31,14 +31,14 @@ public class TraderDummyService  implements TraderService, InitializingBean {
     }*/
 
     @Override
-    @Cacheable(value = "traderCache")
+    @Cacheable(value = "traderCache",key = "#id" ,unless="#result == null")
     public Trader findOne(Long id) {
-        log.info("get by db ---------->> [" + id + "]");
+        log.info("get Trader by db ---------->> [" + id + "]");
         return traderRepository.findOne(id);
     }
 
     @Override
-    @CacheEvict(value = "traderCache", allEntries = true)
+    @CacheEvict(value = "traderCache",key = "#id")
     public void trading(String market, Long id, String code, Integer amount, String price, String type, Boolean fast) {
         Trader trader = new Trader();
         trader.setType(type);
