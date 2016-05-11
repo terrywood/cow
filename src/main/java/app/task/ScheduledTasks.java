@@ -8,10 +8,7 @@ import app.entity.HistoryData;
 import app.entity.StockListData;
 import app.repository.AccountRepository;
 import app.repository.HistoryDataRepository;
-import app.service.AccountService;
-import app.service.StockListService;
-import app.service.TraderService;
-import app.service.TraderSessionService;
+import app.service.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +41,8 @@ public class ScheduledTasks implements InitializingBean {
     TraderSessionService traderSessionService;
     @Autowired
     AccountService accountService;
+    @Autowired
+    HolidayService holidayService;
 
 
     public void stockListItem(StockListData stockList) throws IOException {
@@ -81,19 +80,16 @@ public class ScheduledTasks implements InitializingBean {
        // String userId = "607955";
         //阿勤
       //  String userId = "773183";
-
       /*  List<AccountData> list  = accountRepository.findTrackAccount();
         for(AccountData accountData :list){
             String userId = accountData.getAccountID().toString();
             log.info("track account Id ["+userId+"]");
             service.scheduleAtFixedRate(new Work(userId),10,1, TimeUnit.MILLISECONDS);
         }
-*/
-
+       */
         //service.scheduleWithFixedDelay(new Work("607955"),10,5, TimeUnit.SECONDS);
 
     }
-
  /*   class Work implements Runnable{
         String userId ;
         public Work(String userId) {
@@ -104,12 +100,10 @@ public class ScheduledTasks implements InitializingBean {
             init(userId);
         }
     }*/
-
-
     @Scheduled(fixedDelay = 1)
-    public synchronized void init() {
+    public  void init() {
         //log.info("userID:"+userId);
-        if (isTradeDayTimeByMarket()) {
+        if (holidayService.isTradeDayTimeByMarket()) {
             List<AccountData> array  = accountService.findTrackAccount();
             for(AccountData accountData :array){
                 String userId = accountData.getAccountID().toString();
@@ -122,7 +116,6 @@ public class ScheduledTasks implements InitializingBean {
                     //List list = bean.getStockListData();
                     for (DelegateData data : bean.getDelegateData()) {
                         if(traderService.findOne(data.getDelegateID())==null){
-                            System.out.println("go 1 ["+data+"]");
                             traderService.trading(data.getMarket(), data.getDelegateID(), data.getStockCode(), amount, data.getDelegateUnitPrice(), data.getDelegateType(), true);
                         }
                     }
@@ -139,9 +132,7 @@ public class ScheduledTasks implements InitializingBean {
                             }
                         }
                         if (isDelete) {
-                            System.out.println("go 2");
                             stockListItem(entity);
-                            System.out.println("go 3");
                             stockListService.delete(entityId);
                         }
                     }
@@ -150,22 +141,19 @@ public class ScheduledTasks implements InitializingBean {
                         Long id = data.getListID();
                         StockListData entity = stockListService.findOne(id);
                         if (entity == null) {
-                            System.out.println("go 4");
                             stockListItem(data);
-                            System.out.println("go 5");
                             stockListService.save(data);
                         } else {
                             long lastTrading = data.getLastTradingTime().getTime();
                             if (entity.getLastTradingTime().getTime() != lastTrading) {
-                                System.out.println("go 6");
                                 stockListItem(data);
-                                System.out.println("go 7");
                                 stockListService.update(data);
                             }
                         }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
+                    log.info("connect swww.niuguwang.com time out sleep 10 sec");
                     try {
                         Thread.sleep(10000); //sleep 10 sec
                     } catch (InterruptedException ex) {
@@ -185,22 +173,7 @@ public class ScheduledTasks implements InitializingBean {
 
     }
 
-    public boolean isTradeDayTimeByMarket() {
-        Calendar cal = Calendar.getInstance();
-        int hour = cal.get(Calendar.HOUR_OF_DAY);
-        int minute = cal.get(Calendar.MINUTE);
-        int week = cal.get(Calendar.DAY_OF_WEEK);
-        if (week == 1 || week == 7) {
-            return false;
-        }
-        if (hour < 9 || hour >= 15) {
-            return false;
-        }
-        if (hour == 9 && minute < 15) {
-            return false;
-        }
-        return true;
-    }
+
 
 
 }

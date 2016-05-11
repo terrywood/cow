@@ -5,6 +5,8 @@ import app.entity.StockListData;
 import app.entity.Trader;
 import app.repository.StockListRepository;
 import app.repository.TraderRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.*;
 import org.springframework.stereotype.Service;
@@ -16,18 +18,20 @@ import java.util.List;
  */
 @Service
 public class StockListService {
+    private static final Logger log = LoggerFactory.getLogger(StockListService.class);
+
     @Autowired
     StockListRepository stockListRepository;
 
     @Cacheable(value="movieFindCache",key = "#listID" ,unless="#result == null")
     public StockListData findOne(Long listID){
-        System.out.println("findOne["+listID+"]");
+        log.info("findOne["+listID+"]");
         return  stockListRepository.findOne(listID);
     }
 
     @Cacheable(value="findByAccountID",key = "#accountID")
     public List<StockListData> findByAccountID(String accountID){
-        System.out.println("findByAccountID["+accountID+"]");
+        log.info("findByAccountID["+accountID+"]");
         return  stockListRepository.findByAccountID(accountID);
     }
 

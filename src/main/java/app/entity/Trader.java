@@ -8,12 +8,17 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
+import static javax.persistence.GenerationType.AUTO;
+import static javax.persistence.GenerationType.IDENTITY;
+import static javax.persistence.GenerationType.TABLE;
+
 /**
  * Created by terry.wu on 2016/4/12 0012.
  */
 @Entity
 @Data
 public class Trader implements Serializable {
+
     @Id
     public Long delegateID;
     @LastModifiedDate

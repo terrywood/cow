@@ -44,6 +44,8 @@ import java.util.Map;
 public class TraderYJBService implements TraderService, InitializingBean {
     private static final Logger log = LoggerFactory.getLogger(TraderYJBService.class);
     @Autowired
+    HolidayService holidayService;
+    @Autowired
     TraderRepository traderRepository;
     @Autowired
     ObjectMapper jacksonObjectMapper;
@@ -75,8 +77,10 @@ public class TraderYJBService implements TraderService, InitializingBean {
 
     @Scheduled(cron = "0/30 * 9-16 * * MON-FRI")
     public void cornJob(){
-        yjbAccount();
-        balance();
+        if(holidayService.isTradeDayTimeByMarket()){
+            yjbAccount();
+            balance();
+        }
        //log.info("lotsBalance : "+this.yjbBalance+" account:"+ yjbAccountMap);
     }
 
