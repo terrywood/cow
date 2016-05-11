@@ -29,6 +29,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -38,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 
-//@Service("TraderService")
+@Service("TraderService")
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @Lazy(value = false)
 public class TraderYJBService implements TraderService, InitializingBean {
@@ -87,7 +88,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
     @Override
     @Cacheable(value = "traderCache",key = "#id" ,unless="#result == null")
     public Trader findOne(Long id) {
-        System.out.println("get by db [" + id + "]");
+        log.info("get by db [" + id + "]");
         return traderRepository.findOne(id);
     }
     @Override
@@ -112,22 +113,19 @@ public class TraderYJBService implements TraderService, InitializingBean {
             }
             Double a = ((balance / Double.valueOf(price)) / 100d);
             amount = a.intValue() * 100;
-
         } else {
-            log.info("-------------sell-----------sell--------------");
-            System.out.println(yjbAccountMap);
             requestId = "sellstock_302";
             YJBAccount yjbAccount = yjbAccountMap.get(code);
             if (yjbAccount != null) {
                 amount = yjbAccount.getEnableAmount();
                 yjbAccountMap.remove(code);
-                System.out.println("stock amount in yjb is "+amount);
+                log.info("stock amount in yjb is "+amount);
             }else{
-                System.out.println("cant not find stock in yjb");
+                log.info("cant not find stock in yjb");
             }
 
         }
-
+        log.info("------id["+id+"] code["+code+"] amount["+account+"] price["+price+"] type["+type+"]");
         if (amount > 0) {
             try {
                 CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore)
@@ -147,12 +145,10 @@ public class TraderYJBService implements TraderService, InitializingBean {
                         .addParameter("elig_riskmatch_flag", "1")
                         .addParameter("service_type", "stock")
                         .build();
-
-
                 CloseableHttpResponse response3 = httpclient.execute(trading);
                 HttpEntity entity = response3.getEntity();
                 remark = IOUtils.toString(entity.getContent(), "UTF-8");
-                System.out.println(remark);
+                log.info(remark);
                 EntityUtils.consume(entity);
 
             } catch (Exception e) {

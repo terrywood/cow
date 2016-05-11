@@ -12,7 +12,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-@Service("TraderService")
+
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @Lazy(value = false)
 public class TraderDummyService  implements TraderService, InitializingBean {
