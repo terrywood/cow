@@ -150,6 +150,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
                         .addParameter("elig_riskmatch_flag", "1")
                         .addParameter("service_type", "stock")
                         .build();
+
                 CloseableHttpResponse response3 = httpclient.execute(trading);
                 HttpEntity entity = response3.getEntity();
                 remark = IOUtils.toString(entity.getContent(), "UTF-8");
