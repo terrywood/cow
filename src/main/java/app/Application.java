@@ -46,12 +46,11 @@ public class Application {
         for (String beanName : beanNames) {
             System.out.println(beanName);
         }*/
-
     }
 
     @Bean(destroyMethod = "shutdown")
     public Executor taskScheduler() {
-        return Executors.newScheduledThreadPool(5);
+        return Executors.newScheduledThreadPool(6);
     }
 
     @Bean

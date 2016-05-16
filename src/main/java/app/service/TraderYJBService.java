@@ -185,7 +185,6 @@ public class TraderYJBService implements TraderService, InitializingBean {
             //log.info(result);
             if (result.indexOf("msg_no: '0'") == -1) {
                 login();
-
             } else {
                 String str = "[" + (result.substring(346, result.length() - 14));
                 //log.info("yo hua:"+str);
