@@ -28,6 +28,8 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 @EnableCaching
 @SpringBootApplication
@@ -56,6 +58,11 @@ public class Application {
             System.out.println(beanName);
         }*/
 
+    }
+
+    @Bean(destroyMethod = "shutdown")
+    public Executor taskScheduler() {
+        return Executors.newScheduledThreadPool(5);
     }
 
     @Bean

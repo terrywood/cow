@@ -4,6 +4,7 @@ import app.bean.YJBAccount;
 import app.bean.YJBBalance;
 import app.entity.Trader;
 import app.entity.TraderSession;
+import app.exception.YJBLoginException;
 import app.repository.TraderRepository;
 import cn.skypark.code.MyCheckCodeTool;
 import com.fasterxml.jackson.core.JsonParser;
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -74,12 +76,18 @@ public class TraderYJBService implements TraderService, InitializingBean {
         entity.setSid("40128457");
         entity.setPassword("A+9BQUFnQUJBQUJRQ0VuWlY4UlNrMjh0RlVVOEN5dFpzOFVPUGc0Q3NZdEJVRHRaSlJMeUFQM2taSw==");
 */
+        login();
     }
 
     @Scheduled(cron = "0/30 * 9-16 * * MON-FRI")
     public void cornJob(){
         if(holidayService.isTradeDayTimeByMarket()){
-            yjbAccount();
+            try {
+                yjbAccount();
+            } catch (YJBLoginException e) {
+                login();
+                e.printStackTrace();
+            }
             balance();
         }
        //log.info("lotsBalance : "+this.yjbBalance+" account:"+ yjbAccountMap);
@@ -168,7 +176,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
         this.traderRepository.save(trader);
     }
 
-    public void yjbAccount() {
+    public void yjbAccount() throws YJBLoginException {
         try {
             CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore)
                     .setUserAgent(userAgent)
@@ -179,7 +187,8 @@ public class TraderYJBService implements TraderService, InitializingBean {
             String result = IOUtils.toString(entity.getContent(), "UTF-8");
             //log.info(result);
             if (result.indexOf("msg_no: '0'") == -1) {
-                login();
+                //login();
+                throw  new YJBLoginException();
             } else {
                 String str = "[" + (result.substring(346, result.length() - 14));
                 //log.info("yo hua:"+str);
@@ -193,8 +202,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
                     //}
                 }
             }
-            EntityUtils.consume(entity);
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -225,7 +233,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
     }
 
 
-    public void login() {
+    public synchronized void login() {
         try {
             long start = System.currentTimeMillis();
             CloseableHttpClient httpclient = HttpClients.custom()
