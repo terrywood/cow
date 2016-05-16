@@ -4,7 +4,6 @@ import app.bean.YJBAccount;
 import app.bean.YJBBalance;
 import app.entity.Trader;
 import app.entity.TraderSession;
-import app.exception.YJBLoginException;
 import app.repository.TraderRepository;
 import cn.skypark.code.MyCheckCodeTool;
 import com.fasterxml.jackson.core.JsonParser;
@@ -58,6 +57,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
     private Double lotsBalance = 2500d;
     BasicCookieStore cookieStore;
     TraderSession entity;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         jacksonObjectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
@@ -71,7 +71,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
         //guo jin
         entity.setSid("40132172");
         entity.setPassword("A+9BQUFnQUJBQUFnQVRuZnNuOE1ZTEJjOEJRWlE4VU9QZzRDc1l0Skx2VjlKUGFQZ1dabjZBdDJmNQ==");
-       // System.out.println("yjbAccount afterPropertiesSet begin-----------------------------");
+        // System.out.println("yjbAccount afterPropertiesSet begin-----------------------------");
 /*
         entity.setSid("40128457");
         entity.setPassword("A+9BQUFnQUJBQUJRQ0VuWlY4UlNrMjh0RlVVOEN5dFpzOFVPUGc0Q3NZdEJVRHRaSlJMeUFQM2taSw==");
@@ -80,27 +80,24 @@ public class TraderYJBService implements TraderService, InitializingBean {
     }
 
     @Scheduled(cron = "0/30 * 9-16 * * MON-FRI")
-    public void cornJob(){
-        if(holidayService.isTradeDayTimeByMarket()){
-            try {
-                yjbAccount();
-            } catch (YJBLoginException e) {
-                login();
-                e.printStackTrace();
-            }
+    public void cornJob() {
+        if (holidayService.isTradeDayTimeByMarket()) {
+            yjbAccount();
+
             balance();
         }
-       //log.info("lotsBalance : "+this.yjbBalance+" account:"+ yjbAccountMap);
+        //log.info("lotsBalance : "+this.yjbBalance+" account:"+ yjbAccountMap);
     }
 
     @Override
-    @Cacheable(value = "traderCache",key = "#id" ,unless="#result == null")
+    @Cacheable(value = "traderCache", key = "#id", unless = "#result == null")
     public Trader findOne(Long id) {
         log.info("get by db [" + id + "]");
         return traderRepository.findOne(id);
     }
+
     @Override
-    @CacheEvict(value = "traderCache",key = "#id")
+    @CacheEvict(value = "traderCache", key = "#id")
     public void trading(String market, Long id, String code, Integer _amount, String price, String type, Boolean fast) {
         String account = null;
         String requestId = null;
@@ -113,10 +110,10 @@ public class TraderYJBService implements TraderService, InitializingBean {
         }
         if (type.equals("1")) {
             requestId = "buystock_302";
-            Double balance ;
+            Double balance;
             if (yjbBalance < lotsBalance && yjbBalance > 0d) {
                 balance = yjbBalance;
-            }else{
+            } else {
                 balance = lotsBalance;
             }
             Double a = ((balance / Double.valueOf(price)) / 100d);
@@ -127,13 +124,13 @@ public class TraderYJBService implements TraderService, InitializingBean {
             if (yjbAccount != null) {
                 amount = yjbAccount.getEnableAmount();
                 yjbAccountMap.remove(code);
-                log.info("stock amount in yjb is "+amount);
-            }else{
+                log.info("stock amount in yjb is " + amount);
+            } else {
                 log.info("cant not find stock in yjb");
             }
 
         }
-        log.info("------id["+id+"] code["+code+"] amount["+account+"] price["+price+"] type["+type+"]");
+        log.info("------id[" + id + "] code[" + code + "] amount[" + account + "] price[" + price + "] type[" + type + "]");
         if (amount > 0) {
             try {
                 CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore)
@@ -176,7 +173,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
         this.traderRepository.save(trader);
     }
 
-    public void yjbAccount() throws YJBLoginException {
+    public void yjbAccount() {
         try {
             CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore)
                     .setUserAgent(userAgent)
@@ -187,18 +184,19 @@ public class TraderYJBService implements TraderService, InitializingBean {
             String result = IOUtils.toString(entity.getContent(), "UTF-8");
             //log.info(result);
             if (result.indexOf("msg_no: '0'") == -1) {
-                //login();
-                throw  new YJBLoginException();
+                login();
+
             } else {
                 String str = "[" + (result.substring(346, result.length() - 14));
                 //log.info("yo hua:"+str);
                 if (str.length() > 50) {
-                    List<YJBAccount> list = jacksonObjectMapper.readValue(str, new TypeReference<List<YJBAccount>>() {});
+                    List<YJBAccount> list = jacksonObjectMapper.readValue(str, new TypeReference<List<YJBAccount>>() {
+                    });
                     //if (list.size() > 1) {
-                        for (YJBAccount bean : list) {
-                            //System.out.println(bean);
-                            yjbAccountMap.put(bean.getStockCode(), bean);
-                        }
+                    for (YJBAccount bean : list) {
+                        //System.out.println(bean);
+                        yjbAccountMap.put(bean.getStockCode(), bean);
+                    }
                     //}
                 }
             }
@@ -206,7 +204,6 @@ public class TraderYJBService implements TraderService, InitializingBean {
             e.printStackTrace();
         }
     }
-
 
 
     public void balance() {
