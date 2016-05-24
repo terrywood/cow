@@ -6,7 +6,6 @@ import app.entity.AccountData;
 import app.entity.DelegateData;
 import app.entity.HistoryData;
 import app.entity.StockListData;
-import app.repository.AccountRepository;
 import app.repository.HistoryDataRepository;
 import app.service.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,10 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.*;
 
 @Component
 @Transactional
@@ -100,7 +96,7 @@ public class ScheduledTasks implements InitializingBean {
             init(userId);
         }
     }*/
-    @Scheduled(fixedDelay = 1)
+    @Scheduled(fixedDelay = 100)
     public  void init() {
         //log.info("userID:"+userId);
         if (holidayService.isTradeDayTimeByMarket()) {
