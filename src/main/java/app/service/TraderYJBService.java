@@ -57,6 +57,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
     private Map<String, YJBAccount> yjbAccountMap = new HashMap<>();
     private Double yjbBalance;
     private Double lotsBalance = 10000d;
+    private Boolean isLogin = false;
     BasicCookieStore cookieStore;
     TraderSession entity;
 
@@ -84,8 +85,13 @@ public class TraderYJBService implements TraderService, InitializingBean {
     @Scheduled(cron = "0/30 * 9-16 * * MON-FRI")
     public void cornJob() {
         if (holidayService.isTradeDayTimeByMarket()) {
-            yjbAccount();
-            balance();
+            if(isLogin){
+                yjbAccount();
+                balance();
+            }else{
+                login();
+            }
+
         }
         //log.info("lotsBalance : "+this.yjbBalance+" account:"+ yjbAccountMap);
     }
@@ -265,7 +271,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
             String result = IOUtils.toString(entity.getContent(), "UTF-8");
             //log.info(result);
             if (result.indexOf("msg_no: '0'") == -1) {
-                login();
+                isLogin = false;
             } else {
                 String str = "[" + (result.substring(346, result.length() - 14));
                 //log.info("yo hua:"+str);
@@ -357,6 +363,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
                     if (cookies.isEmpty()) {
                         System.out.println("None");
                     } else {
+                        isLogin= true;
                         for (int i = 0; i < cookies.size(); i++) {
                             //cookieStore.addCookie(cookies.get(i));
                             System.out.println("- " + cookies.get(i).toString());
