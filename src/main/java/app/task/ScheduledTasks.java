@@ -84,7 +84,6 @@ public class ScheduledTasks implements InitializingBean {
         }
        */
         //service.scheduleWithFixedDelay(new Work("607955"),10,5, TimeUnit.SECONDS);
-
     }
  /*   class Work implements Runnable{
         String userId ;
@@ -96,7 +95,7 @@ public class ScheduledTasks implements InitializingBean {
             init(userId);
         }
     }*/
-    @Scheduled(fixedDelay = 100)
+    @Scheduled(fixedDelay = 1)
     public  void init() {
         //log.info("userID:"+userId);
         if (holidayService.isTradeDayTimeByMarket()) {

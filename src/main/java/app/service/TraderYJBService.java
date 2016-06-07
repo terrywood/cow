@@ -56,7 +56,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
     String userAgent = "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET4.0C; .NET4.0E)";
     private Map<String, YJBAccount> yjbAccountMap = new HashMap<>();
     private Double yjbBalance;
-    private Double lotsBalance = 2500d;
+    private Double lotsBalance = 10000d;
     BasicCookieStore cookieStore;
     TraderSession entity;
 
@@ -85,7 +85,6 @@ public class TraderYJBService implements TraderService, InitializingBean {
     public void cornJob() {
         if (holidayService.isTradeDayTimeByMarket()) {
             yjbAccount();
-
             balance();
         }
         //log.info("lotsBalance : "+this.yjbBalance+" account:"+ yjbAccountMap);
@@ -159,7 +158,6 @@ public class TraderYJBService implements TraderService, InitializingBean {
         return  ;
     }
 
-    private  int retryTimes = 0;
     @Override
     @CacheEvict(value = "traderCache", key = "#id")
     public  void trading(String market, Long id, String code, Integer _amount, String price, String type, Boolean fast) {
@@ -168,6 +166,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
             cancelEntrust(code);
             try {
                 Thread.sleep(10000); //wait 10 sec;
+                yjbAccount();
                 tradingDo(market, id, code, price, type, fast); // retry
                 log.info("- retry to call api-----id[" + id + "] code[" + code + "]  price[" + price + "] type[" + type + "]");
             } catch (InterruptedException e) {
@@ -229,12 +228,12 @@ public class TraderYJBService implements TraderService, InitializingBean {
                         .addParameter("elig_riskmatch_flag", "1")
                         .addParameter("service_type", "stock")
                         .build();
-/*
+
                 CloseableHttpResponse response3 = httpclient.execute(trading);
                 HttpEntity entity = response3.getEntity();
                 remark = IOUtils.toString(entity.getContent(), "UTF-8");
                 log.info(remark);
-                EntityUtils.consume(entity);*/
+                EntityUtils.consume(entity);
 
             } catch (Exception e) {
                 e.printStackTrace();
