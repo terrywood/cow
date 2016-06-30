@@ -136,6 +136,7 @@ public class ScheduledTasks implements InitializingBean {
                         Long id = data.getListID();
                         StockListData entity = stockListService.findOne(id);
                         if (entity == null) {
+                            System.out.println(" test 111111");
                             stockListItem(data);
                             stockListService.save(data);
                         } else {

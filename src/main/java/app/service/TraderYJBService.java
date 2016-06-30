@@ -173,8 +173,8 @@ public class TraderYJBService implements TraderService, InitializingBean {
             try {
                 Thread.sleep(10000); //wait 10 sec;
                 yjbAccount();
-                tradingDo(market, id, code, price, type, fast); // retry
                 log.info("- retry to call api-----id[" + id + "] code[" + code + "]  price[" + price + "] type[" + type + "]");
+                tradingDo(market, id, code, price, type, fast); // retry
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -215,7 +215,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
 
         if(amount>0 ){
 
-            log.info("------id[" + id + "] code[" + code + "] amount[" + account + "] price[" + price + "] type[" + type + "]");
+            log.info("------id[" + id + "] code[" + code + "] amount[" + amount + "] price[" + price + "] type[" + type + "]");
             try {
                 CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore)
                         .setUserAgent(userAgent)
