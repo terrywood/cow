@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.CacheManager;
@@ -67,10 +68,10 @@ public class Application {
     }
 
 
- /*  @Bean
-    public CommandLineRunner demo() {
+    @Bean
+    public CommandLineRunner initData() {
         return (args) -> {
 
         };
-    }*/
+    }
 }
