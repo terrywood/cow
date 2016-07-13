@@ -1,5 +1,6 @@
 package app.bean;
 
+import app.entity.AccountData;
 import app.entity.DelegateData;
 import app.entity.StockListData;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -14,8 +15,8 @@ import java.util.List;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class Account {
+public class AccountRaw {
     private List<StockListData> stockListData;
     private List<DelegateData> delegateData;
-    //private List<AccountData> accountData;
+    private List<AccountData> accountData;
 }

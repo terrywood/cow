@@ -1,3 +1,4 @@
+import app.bean.AccountRaw;
 import app.bean.YJBEntrust;
 import app.entity.TraderSession;
 import com.fasterxml.jackson.core.JsonParser;
@@ -13,6 +14,26 @@ import java.util.List;
 
 public class JacksonDemo {
     public static void main(String[] args) throws ParseException, IOException {
+        JacksonDemo demo = new JacksonDemo();
+        demo.cow();
+
+    }
+
+
+
+    public void cow() throws ParseException, IOException {
+        String userId ="607955";
+        URL url = new URL("https://swww.niuguwang.com/tr/201411/account.ashx?aid=" + userId + "&s=xiaomi&version=3.4.4&packtype=1");
+        ObjectMapper mapper = new ObjectMapper();
+        AccountRaw callback = mapper.readValue(url, AccountRaw.class);
+
+      //  Account bean = mapper.readValue(url, Account.class);
+
+        System.out.println(callback.getAccountData());
+
+    }
+
+    public  void gf() throws ParseException, IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
         mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES,true);
