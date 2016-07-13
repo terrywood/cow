@@ -72,6 +72,10 @@ public class Application {
     public CommandLineRunner initData() {
         return (args) -> {
 
+
+
+            System.out.println();
+
         };
     }
 }

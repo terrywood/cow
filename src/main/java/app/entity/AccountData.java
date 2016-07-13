@@ -38,6 +38,8 @@ public class AccountData implements Serializable {
     private Float monthYield;
     @JsonProperty(value = "MonthTradeNumber")
     private Float monthTradeNumber;
+    @JsonProperty(value = "AvgHoldingDay")
+    private Float avgHoldingDay;
     @JsonProperty(value = "AvaliableAsset")
     private Float avaliableAsset;
     @JsonProperty(value = "FirstTradeTime")

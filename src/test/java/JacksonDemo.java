@@ -1,4 +1,3 @@
-import app.bean.AccountRaw;
 import app.bean.YJBEntrust;
 import app.entity.TraderSession;
 import com.fasterxml.jackson.core.JsonParser;
@@ -11,8 +10,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Map;
 
 public class JacksonDemo {
+
+    ObjectMapper objectMapper = new ObjectMapper();
     public static void main(String[] args) throws ParseException, IOException {
         JacksonDemo demo = new JacksonDemo();
         demo.cow();
@@ -22,15 +24,21 @@ public class JacksonDemo {
 
 
     public void cow() throws ParseException, IOException {
-        String userId ="607955";
-        URL url = new URL("https://swww.niuguwang.com/tr/201411/account.ashx?aid=" + userId + "&s=xiaomi&version=3.4.4&packtype=1");
-        ObjectMapper mapper = new ObjectMapper();
-        AccountRaw callback = mapper.readValue(url, AccountRaw.class);
+        URL url = new URL("https://swww.niuguwang.com/foll/api/friendmylist.ashx?usertoken=hleVEQYrnxdWRXiQjj1IN1nVq1Va7aqF37J5L8I56leXtXOhwkCl1Q**&type=2&index=1&size=30&s=xiaomi&version=3.5.4&packtype=1");
+        Map map = objectMapper.readValue(url,java.util.Map.class);
+        List<Map> data = (List<Map>) map.get("data");
+        String out = "";
+        for(Map user : data){
+            Integer userID = (Integer)user.get("userID");
+            //String userName = (String)user.get("userName");
+            URL url2 = new URL("https://str.niuguwang.com/tr/2016/other001.ashx?userid="+userID+"&usertoken=hleVEQYrnxdWRXiQjj1IN1nVq1Va7aqF37J5L8I56leXtXOhwkCl1Q**&s=xiaomi&version=3.5.4&packtype=1");
+            Map acc = objectMapper.readValue(url2,java.util.Map.class);
+            List<Map> datas = (List<Map>) acc.get("datas");
+            String accountID = (String) datas.get(0).get("accountID");
+            out+= accountID +",";
+        }
 
-      //  Account bean = mapper.readValue(url, Account.class);
-
-        System.out.println(callback.getAccountData());
-
+        System.out.println(out);
     }
 
     public  void gf() throws ParseException, IOException {

@@ -1,13 +1,13 @@
 package app.repository;
 
 import app.entity.AccountData;
-import app.entity.TraderSession;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface AccountRepository extends CrudRepository<AccountData, Long> {
+public interface AccountRepository  extends JpaRepository<AccountData, Long>, JpaSpecificationExecutor {
 
    // List<AccountData> findBy (String lastName);
 

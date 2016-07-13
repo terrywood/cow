@@ -17,20 +17,27 @@
 package app.web;
 
 
-import app.entity.StockListData;
-import app.service.StockListService;
-import app.service.TraderSessionService;
+import app.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Date;
-import java.util.List;
+import java.text.ParseException;
 
 @Controller
 public class SampleController {
+    @Autowired
+    AccountService accountService;
+    @RequestMapping("/accounts")
+    public String greeting(/*
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "20") int size,
+            @RequestParam(value = "date") @DateTimeFormat(pattern = "yyyy-MM-dd") java.util.Date date,*/
+            Model model) throws ParseException {
+        model.addAttribute("pageList", accountService.findAll());
+        return "accounts";
+    }
 
 	/*@Autowired
 	private StockListService stockListService;
