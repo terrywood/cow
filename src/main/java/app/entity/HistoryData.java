@@ -1,14 +1,12 @@
 package app.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.Date;
 
 @Data
@@ -30,6 +28,9 @@ public class HistoryData {
 
     @JsonProperty(value = "Type")
     public String type; // 1 buy ; 2 sell
+
+    @JsonProperty(value = "TotalPrice")
+    public Double totalPrice;
 
     @JsonProperty(value = "TransactionAmount")
     public Integer transactionAmount;

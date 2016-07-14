@@ -50,17 +50,21 @@ public class ScheduledTasks implements InitializingBean {
                 String type = data.getType();
                 Float price =  data.getTransactionUnitPrice() ;
                 String result = String.valueOf(price);
-
-            /*    if (type.equals("1")) {
+                /*if (type.equals("1")) {
                     price = data.getTransactionUnitPrice() * 1.025f;
                     result = String.format("%.2f", price);
                 } else {
                     price = data.getTransactionUnitPrice() * 0.97f;
                     result = String.format("%.2f", price);
                 }*/
+
                 //call 券商API
                 if(traderService.findOne(data.getDelegateID())==null){
-                    traderService.trading(stockList.getMarket(), data.getDelegateID(), stockList.getStockCode(), amount, result, type, false);
+                    if(data.getTotalPrice()>100000){
+                        traderService.trading(stockList.getMarket(), data.getDelegateID(), stockList.getStockCode(), amount, result, type, false);
+                    }else{
+                        log.info("less 10W ignore getDelegateID["+data.getDelegateID()+"]");
+                    }
                 }
                 historyDataRepository.save(data);
             }
@@ -136,7 +140,6 @@ public class ScheduledTasks implements InitializingBean {
                         Long id = data.getListID();
                         StockListData entity = stockListService.findOne(id);
                         if (entity == null) {
-                            System.out.println(" test 111111");
                             stockListItem(data);
                             stockListService.save(data);
                         } else {
