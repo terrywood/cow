@@ -34,10 +34,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Service("TraderService")
@@ -92,10 +89,10 @@ public class TraderYJBService implements TraderService, InitializingBean {
             if(isLogin){
                 yjbAccount();
                 balance();
+                updateYjbAccountOrderMap();
             }else{
                 login();
             }
-
         }
         //log.info("lotsBalance : "+this.yjbBalance+" account:"+ yjbAccountMap);
     }
@@ -106,8 +103,24 @@ public class TraderYJBService implements TraderService, InitializingBean {
         log.info("get by db [" + id + "]");
         return traderRepository.findOne(id);
     }
-
-
+    private void updateYjbAccountOrderMap(){
+        List<YJBEntrust>  list = entrustList();
+        if(!list.isEmpty()){
+            Set<String> keys = yjbAccountOrderMap.keySet();
+            for(String key :keys){
+                boolean  orderSuccess = true;
+                for(YJBEntrust yjbEntrust : list){
+                    if(key.equals(yjbEntrust.getStockCode())){
+                        orderSuccess = false;
+                        break;
+                    }
+                }
+                if(orderSuccess){
+                    yjbAccountOrderMap.remove(key);
+                }
+            }
+        }
+    }
     public List<YJBEntrust> entrustList(){
         try {
             CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore)
@@ -160,6 +173,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
             e.printStackTrace();
         }
     }
+
     public void cancelEntrust(String code){
         List<YJBEntrust> list = entrustList();
         list.stream().filter(entrust -> code.equals(entrust.getStockCode()) && (entrust.getEntrustStatus().equals("正常") || entrust.getEntrustStatus().equals("已报")) ).forEach(entrust -> {

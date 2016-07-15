@@ -22,6 +22,7 @@ public class YJBEntrust implements Serializable{
 
     @JsonProperty(value = "stock_code")
     public  String stockCode;
+
     @JsonProperty(value = "stock_name")
     public  String stockName;
 
