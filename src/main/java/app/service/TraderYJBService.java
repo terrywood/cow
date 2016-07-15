@@ -1,8 +1,6 @@
 package app.service;
 
-import app.bean.YJBAccount;
-import app.bean.YJBBalance;
-import app.bean.YJBEntrust;
+import app.bean.*;
 import app.entity.Trader;
 import app.entity.TraderSession;
 import app.repository.TraderRepository;
@@ -55,6 +53,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
     ObjectMapper jacksonObjectMapper;
     String userAgent = "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET4.0C; .NET4.0E)";
     private Map<String, YJBAccount> yjbAccountMap = new HashMap<>();
+    private Map<String, Func302> yjbAccountOrderMap = new HashMap<>();
     private Double yjbBalance;
     private Double lotsBalance = 10000d;
     private Boolean isLogin = false;
@@ -68,18 +67,23 @@ public class TraderYJBService implements TraderService, InitializingBean {
         this.yjbBalance = 0d;
         this.cookieStore = new BasicCookieStore();
         this.entity = new TraderSession();
+        //guo jin
         entity.setBrand("yjb");
         entity.setShAccount("A491467753");
         entity.setSzAccount("0126862343");
-        //guo jin
         entity.setSid("40132172");
         entity.setPassword("A+9BQUFnQUJBQUFnQVRuZnNuOE1ZTEJjOEJRWlE4VU9QZzRDc1l0Skx2VjlKUGFQZ1dabjZBdDJmNQ==");
+
+
         // System.out.println("yjbAccount afterPropertiesSet begin-----------------------------");
 /*
+        //Terry
         entity.setSid("40128457");
+        entity.setShAccount("A131806813");
+        entity.setSzAccount("0100368361");
         entity.setPassword("A+9BQUFnQUJBQUJRQ0VuWlY4UlNrMjh0RlVVOEN5dFpzOFVPUGc0Q3NZdEJVRHRaSlJMeUFQM2taSw==");
 */
-        login();
+      //  login();
     }
 
     @Scheduled(cron = "0/30 * 9-16 * * MON-FRI")
@@ -104,7 +108,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
     }
 
 
-    public List<YJBEntrust> entrust(){
+    public List<YJBEntrust> entrustList(){
         try {
             CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore)
                     .setUserAgent(userAgent)
@@ -127,7 +131,6 @@ public class TraderYJBService implements TraderService, InitializingBean {
                 List<YJBEntrust> beanList = jacksonObjectMapper.readValue(str, new TypeReference<List<YJBEntrust>>() {});
                 System.out.println(beanList);
                 return  beanList;
-
             }
 
         }catch (Exception e){
@@ -135,51 +138,75 @@ public class TraderYJBService implements TraderService, InitializingBean {
         }
         return  Collections.emptyList();
     }
+    public void cancelEntrustDo(String code,String entrustNo){
+        try {
+            CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore)
+                    .setUserAgent(userAgent)
+                    .build();
+            HttpUriRequest trading = RequestBuilder.get()
+                    .setUri(new URI("https://jy.yongjinbao.com.cn/winner_gj/gjzq/stock/exchange.action"))
+                    .addParameter("CSRF_Token", "undefined")
+                    .addParameter("request_id", "chedan_304")
+                    .addParameter("entrust_no", entrustNo)
+                    .addParameter("stock_code", code)
+                    .build();
+            CloseableHttpResponse response3 = httpclient.execute(trading);
+            HttpEntity entity = response3.getEntity();
+            String remark = IOUtils.toString(entity.getContent(), "UTF-8");
+            log.info(remark);
+            EntityUtils.consume(entity);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     public void cancelEntrust(String code){
-        List<YJBEntrust> list = entrust();
+        List<YJBEntrust> list = entrustList();
         list.stream().filter(entrust -> code.equals(entrust.getStockCode()) && (entrust.getEntrustStatus().equals("正常") || entrust.getEntrustStatus().equals("已报")) ).forEach(entrust -> {
-
-            try {
-                CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore)
-                        .setUserAgent(userAgent)
-                        .build();
-                HttpUriRequest trading = RequestBuilder.get()
-                        .setUri(new URI("https://jy.yongjinbao.com.cn/winner_gj/gjzq/stock/exchange.action"))
-                        .addParameter("CSRF_Token", "undefined")
-                        .addParameter("request_id", "chedan_304")
-                        .addParameter("entrust_no", entrust.getEntrustNo())
-                        .addParameter("stock_code", code)
-                        .build();
-                CloseableHttpResponse response3 = httpclient.execute(trading);
-                HttpEntity entity = response3.getEntity();
-                String remark = IOUtils.toString(entity.getContent(), "UTF-8");
-                log.info(remark);
-                EntityUtils.consume(entity);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
+            cancelEntrustDo(code,entrust.getEntrustNo());
         });
-        return  ;
     }
 
     @Override
     @CacheEvict(value = "traderCache", key = "#id")
     public  void trading(String market, Long id, String code, Integer _amount, String price, String type, Boolean fast) {
-       int amount = tradingDo(market, id, code, price, type, fast);
-        if(amount==0){
-            cancelEntrust(code);
-            try {
-                Thread.sleep(10000); //wait 10 sec;
-                yjbAccount();
-                log.info("- retry to call api-----id[" + id + "] code[" + code + "]  price[" + price + "] type[" + type + "]");
-                tradingDo(market, id, code, price, type, fast); // retry
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        if( Double.valueOf(price)*_amount > 100000){
+            Func302 func302 =this.yjbAccountOrderMap.get(code);
+            if(func302!=null){
+                log.info("cancel entrust and order new item :" + func302);
+                cancelEntrustDo(code,func302.getEntrust_no());
+                yjbAccountOrderMap.remove(code);
             }
+            int amount = tradingDo(market, id, code, price, type, fast);
+            if(amount==0){
+                cancelEntrust(code);
+                try {
+                    Thread.sleep(10000); //wait 10 sec;
+                    yjbAccount();
+                    log.info("- retry to call api-----id[" + id + "] code[" + code + "]  price[" + price + "] type[" + type + "]");
+                    tradingDo(market, id, code, price, type, fast); // retry
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }else{
+
+            log.info("less 10W ignore getDelegateID["+id+"]");
+            Trader trader = new Trader();
+            trader.setType(type);
+            trader.setDelegateID(id);
+            trader.setTransactionAmount(0);
+            trader.setTransactionUnitPrice(Float.valueOf(price));
+            trader.setCode(code);
+            trader.setFast(fast);
+            trader.setRemark("less 10W ignore getDelegateID["+id+"]");
+            this.traderRepository.save(trader);
         }
+
+
     }
+
     public  int tradingDo(String market, Long id, String code, String price, String type, Boolean fast) {
         String account = null;
         String requestId = null;
@@ -234,13 +261,23 @@ public class TraderYJBService implements TraderService, InitializingBean {
                         .addParameter("elig_riskmatch_flag", "1")
                         .addParameter("service_type", "stock")
                         .build();
-
                 CloseableHttpResponse response3 = httpclient.execute(trading);
                 HttpEntity entity = response3.getEntity();
                 remark = IOUtils.toString(entity.getContent(), "UTF-8");
+                remark = org.apache.commons.lang3.StringUtils.replace(remark,"\"{","{");
+                remark = org.apache.commons.lang3.StringUtils.replace(remark,"}\"","}");
                 log.info(remark);
+               // if (type.equals("1") ) {
+                    YJBResult result =   jacksonObjectMapper.readValue(remark, YJBResult.class);
+                    System.out.println(result);
+                    YJBReturnJson returnJson = result.getReturnJson();
+                    if(returnJson.getMsgNo().equals("0") && returnJson.getFunc302().size()==2){
+                        Func302 func302 = returnJson.getFunc302().get(1);
+                        log.info("success order: " + func302);
+                        yjbAccountOrderMap.put(code,func302);
+                    }
+               // }
                 EntityUtils.consume(entity);
-
             } catch (Exception e) {
                 e.printStackTrace();
             }

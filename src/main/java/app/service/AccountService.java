@@ -62,13 +62,15 @@ public class AccountService {
     }
 
     public void updateAccount(String aid) throws IOException {
-
         URL url = new URL("https://swww.niuguwang.com/tr/201411/account.ashx?aid=" + aid + "&s=xiaomi&version=3.4.4&packtype=1");
         //ObjectMapper mapper = new ObjectMapper();
-
         Date today = DateUtils.truncate(new Date(), Calendar.DATE);
         AccountRaw callback = objectMapper.readValue(url, AccountRaw.class);
         AccountData data = callback.getAccountData().get(0);
+        AccountData accountData = accountRepository.getOne(Long.valueOf(aid));
+        if(accountData !=null){
+            data.setStatus(accountData.getStatus());
+        }
         accountRepository.save(data);
         Long _aid =Long.valueOf(aid);
         AccountDaily accountDaily =accountDailyRepository.findByDayAndAccountID(today,_aid);
@@ -79,7 +81,6 @@ public class AccountService {
         accountDaily.setDay(today);
         accountDaily.setEquity(data.getEquity());
         accountDailyRepository.save(accountDaily);
-
     }
 
 }

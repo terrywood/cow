@@ -60,11 +60,7 @@ public class ScheduledTasks implements InitializingBean {
 
                 //call 券商API
                 if(traderService.findOne(data.getDelegateID())==null){
-                    if(data.getTotalPrice()>100000){
-                        traderService.trading(stockList.getMarket(), data.getDelegateID(), stockList.getStockCode(), amount, result, type, false);
-                    }else{
-                        log.info("less 10W ignore getDelegateID["+data.getDelegateID()+"]");
-                    }
+                    traderService.trading(stockList.getMarket(), data.getDelegateID(), stockList.getStockCode(), data.getTransactionAmount(), result, type, false);
                 }
                 historyDataRepository.save(data);
             }
@@ -115,7 +111,7 @@ public class ScheduledTasks implements InitializingBean {
                     //List list = bean.getStockListData();
                     for (DelegateData data : bean.getDelegateData()) {
                         if(traderService.findOne(data.getDelegateID())==null){
-                            traderService.trading(data.getMarket(), data.getDelegateID(), data.getStockCode(), amount, data.getDelegateUnitPrice(), data.getDelegateType(), true);
+                            traderService.trading(data.getMarket(), data.getDelegateID(), data.getStockCode(), data.getDelegateAmount(), data.getDelegateUnitPrice(), data.getDelegateType(), true);
                         }
                     }
                     //handle clear stock
