@@ -67,7 +67,7 @@ public class AccountService {
         Date today = DateUtils.truncate(new Date(), Calendar.DATE);
         AccountRaw callback = objectMapper.readValue(url, AccountRaw.class);
         AccountData data = callback.getAccountData().get(0);
-        AccountData accountData = accountRepository.getOne(Long.valueOf(aid));
+        AccountData accountData = accountRepository.findOne(Long.valueOf(aid));
         if(accountData !=null){
             data.setStatus(accountData.getStatus());
         }
