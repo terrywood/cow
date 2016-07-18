@@ -66,16 +66,10 @@ public class Application {
         cmfb.setShared(true);
         return cmfb;
     }
-
-
     @Bean
     public CommandLineRunner initData() {
         return (args) -> {
-
-
-
             System.out.println();
-
         };
     }
 }

@@ -27,8 +27,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -37,7 +35,7 @@ import java.net.URI;
 import java.util.*;
 
 
-@Service("TraderService")
+
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @Lazy(value = false)
 public class TraderYJBService implements TraderService, InitializingBean {
@@ -83,7 +81,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
       //  login();
     }
 
-    @Scheduled(cron = "0/30 * 9-16 * * MON-FRI")
+   // @Scheduled(cron = "0/30 * 9-16 * * MON-FRI")
     public void cornJob() {
         if (holidayService.isTradeDayTimeByMarket()) {
             if(isLogin){

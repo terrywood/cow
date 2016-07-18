@@ -16,7 +16,8 @@ public class JacksonDemo {
     ObjectMapper objectMapper = new ObjectMapper();
     public static void main(String[] args) throws ParseException, IOException {
         JacksonDemo demo = new JacksonDemo();
-        demo.gf();
+        //demo.gf();
+        demo.cow();
 
     }
 
