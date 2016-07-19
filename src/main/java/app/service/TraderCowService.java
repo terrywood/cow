@@ -98,6 +98,7 @@ public class TraderCowService implements TraderService {
         }else{
              remark ="less 10W ignore getDelegateID["+id+"]";
         }
+
         Trader obj = new Trader();
         obj.setType(type);
         obj.setDelegateID(id);

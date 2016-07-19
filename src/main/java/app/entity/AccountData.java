@@ -50,5 +50,6 @@ public class AccountData implements Serializable {
     public Date lastTradingTime;
 
     public int status;
+    public String position;
 }
 

@@ -17,6 +17,8 @@
 package app.web;
 
 
+import app.entity.AccountDaily;
+import app.entity.AccountData;
 import app.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,6 +26,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.text.ParseException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 public class SampleController {
@@ -35,7 +40,14 @@ public class SampleController {
             @RequestParam(value = "size", required = false, defaultValue = "20") int size,
             @RequestParam(value = "date") @DateTimeFormat(pattern = "yyyy-MM-dd") java.util.Date date,*/
             Model model) throws ParseException {
-        model.addAttribute("pageList", accountService.findAll());
+        List<AccountData> list = accountService.findAll();
+        Map<Long,List<AccountDaily>> map = new HashMap<>();
+        for(AccountData data :list){
+            List<AccountDaily> dailies = accountService.findByAccountID(data.getAccountID());
+            map.put(data.getAccountID(),dailies);
+        }
+        model.addAttribute("daily",map);
+        model.addAttribute("pageList", list);
         return "accounts";
     }
 

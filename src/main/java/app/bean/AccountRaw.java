@@ -19,4 +19,5 @@ public class AccountRaw {
     private List<StockListData> stockListData;
     private List<DelegateData> delegateData;
     private List<AccountData> accountData;
+    private String position;
 }

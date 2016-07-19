@@ -34,8 +34,14 @@ def getData():
     x=0
     while True:
         x=x+1
-        print (x)
+        r = session.get("https://xueqiu.com/cubes/rebalancing/history.json?cube_symbol=ZH902949&count=20&page=1",headers=headers)
+        aa = r.json()
+        print(aa)
         time.sleep(5)
+        if x>0:
+            break
+    print("finish")    
+        
 
 # 只写了手机号登录的情况，邮箱登录的情况，可以简单修改 postdata 后实现、
 def login(telephone, password):
@@ -59,6 +65,7 @@ def login(telephone, password):
         print("登录失败，请检查你的手机号和密码输入是否正确")
     else:
         print('欢迎使用 xchaoinfo 写的模拟登录 \n 你的用户 id 是：%s, 你的用户名是：%s' % (res[0]))
+        getData()
 
 
 if __name__ == '__main__':
