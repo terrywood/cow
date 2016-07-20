@@ -1,4 +1,6 @@
+import app.bean.StockList;
 import app.bean.YJBResult;
+import app.entity.HistoryData;
 import app.entity.TraderSession;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,10 +19,25 @@ public class JacksonDemo {
     public static void main(String[] args) throws ParseException, IOException {
         JacksonDemo demo = new JacksonDemo();
         //demo.gf();
-        demo.cow();
+        demo.stocklistitem();
 
     }
 
+
+
+    public void stocklistitem() throws ParseException, IOException {
+        URL url = new URL("https://swww.niuguwang.com/tr/201411/stocklistitem.ashx?id=20635635&s=xiaomi&version=3.4.4&packtype=1");
+        ObjectMapper jacksonObjectMapper = new ObjectMapper();
+        StockList bean = jacksonObjectMapper.readValue(url, StockList.class);
+        List<HistoryData> list =(bean.getHistoryData());
+        for(HistoryData data:list){
+            // only handle 10 min around order
+            if(System.currentTimeMillis()-data.getAddTime().getTime()<= (1000 *60 *10)){
+                System.out.println(data);
+            }
+
+        }
+    }
 
 
     public void cow() throws ParseException, IOException {

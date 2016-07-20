@@ -57,10 +57,11 @@ public class ScheduledTasks implements InitializingBean {
                     price = data.getTransactionUnitPrice() * 0.97f;
                     result = String.format("%.2f", price);
                 }*/
-
-                //call 券商API
-                if(traderService.findOne(data.getDelegateID())==null){
-                    traderService.trading(stockList.getMarket(), data.getDelegateID(), stockList.getStockCode(), data.getTransactionAmount(), result, type, false);
+                if(System.currentTimeMillis()-data.getAddTime().getTime()<= (1000 *60 *10)){
+                    //call 券商API
+                    if(traderService.findOne(data.getDelegateID())==null){
+                        traderService.trading(stockList.getMarket(), data.getDelegateID(), stockList.getStockCode(), data.getTransactionAmount(), result, type, false);
+                    }
                 }
                 historyDataRepository.save(data);
             }
