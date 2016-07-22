@@ -5,11 +5,12 @@ Created on Mon Jul 18 18:36:34 2016
 @author: Administrator
 """
 
-import requests
 import hashlib
 import re
+import requests
 import time
 from datetime import datetime
+
 # 构造 Request headers
 agent = 'Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
 headers = {
@@ -31,9 +32,13 @@ def get_md5(password):
     md5 = hashlib.md5()
     md5.update(password.encode())
     return md5.hexdigest().upper()
+    
+    
 def order(code,price,prev_weight_adjusted,target_weight):
 
     pass
+
+
 
 def handleData(json):
     #print(json)

@@ -1,9 +1,6 @@
-import os
-import requests
 import json
 import urllib
-import time
-import six
+
 
 def __get_html( url):
     send_headers = {
@@ -13,13 +10,8 @@ def __get_html( url):
         'Host': 'xueqiu.com',
         'Cookie': r'xxxxxx',
     }
-
-    if six.PY2:
-        req = urllib2.Request(url, headers=send_headers)
-        resp = urllib2.urlopen(req)
-    else:
-        req = urllib.request.Request(url, headers=send_headers)
-        resp = urllib.request.urlopen(req)
+    req = urllib.request.Request(url, headers=send_headers)
+    resp = urllib.request.urlopen(req)
     html = resp.read().decode('UTF-8')
     return html
     
@@ -34,7 +26,7 @@ def __get_portfolio_info(portfolio_code):
     pos_end = html.find('SNB.cubePieData')
     json_data = html[pos_start:pos_end]
     portfolio_info = json.loads(json_data)
-    print(portfolio_info)
+    #print(portfolio_info)
     return portfolio_info 
     
     
@@ -81,21 +73,6 @@ def get_position():
     :return:
     """
     xq_positions = __get_position()
-    balance = get_balance()[0]
-    position_list = []
-    for pos in xq_positions:
-        volume = pos['weight'] * balance['asset_balance'] / 100
-        position_list.append({'cost_price': volume / 100,
-                              'current_amount': 100,
-                              'enable_amount': 100,
-                              'income_balance': 0,
-                              'keep_cost_price': volume / 100,
-                              'last_price': volume / 100,
-                              'market_value': volume,
-                              'position_str': 'xxxxxx',
-                              'stock_code': pos['stock_symbol'],
-                              'stock_name': pos['stock_name']
-                              })
-    return position_list            
+    return xq_positions            
 result = get_position() 
 print(result)           

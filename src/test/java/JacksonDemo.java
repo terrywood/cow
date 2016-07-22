@@ -19,7 +19,7 @@ public class JacksonDemo {
     public static void main(String[] args) throws ParseException, IOException {
         JacksonDemo demo = new JacksonDemo();
         //demo.gf();
-        demo.stocklistitem();
+        demo.cow();
 
     }
 

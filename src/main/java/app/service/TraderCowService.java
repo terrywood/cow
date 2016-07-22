@@ -26,7 +26,7 @@ public class TraderCowService implements TraderService {
     @Autowired
     ObjectMapper jacksonObjectMapper;
     private Double lotsBalance = 100000d;
-    private Double yjbBalance  = 100000d;
+    //private Double yjbBalance  = 100000d;
     private String userToken = "hleVEQYrnxdWRXiQjj1IN1nVq1Va7aqF37J5L8I56leXtXOhwkCl1Q**";
 
     @Override

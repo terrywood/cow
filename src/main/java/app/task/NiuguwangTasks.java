@@ -23,8 +23,8 @@ import java.util.List;
 
 @Component
 @Transactional
-public class ScheduledTasks implements InitializingBean {
-    private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
+public class NiuguwangTasks implements InitializingBean {
+    private static final Logger log = LoggerFactory.getLogger(NiuguwangTasks.class);
     @Autowired
     ObjectMapper jacksonObjectMapper;
     @Autowired
