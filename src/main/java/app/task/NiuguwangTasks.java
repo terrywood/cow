@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -96,7 +95,7 @@ public class NiuguwangTasks implements InitializingBean {
             init(userId);
         }
     }*/
-    @Scheduled(fixedDelay = 1)
+    //@Scheduled(fixedDelay = 1)
     public  void init() {
         //log.info("userID:"+userId);
         if (holidayService.isTradeDayTimeByMarket()) {

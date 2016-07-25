@@ -14,8 +14,8 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class XueViewRebalancing {
-    public String status;
-    public Double cash;
+    private String status;
+    private Double cash;
     @JsonProperty(value = "holdings")
-    public List<XueHoldings> holdings;
+    private List<XueHoldings> holdings;
 }

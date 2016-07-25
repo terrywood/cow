@@ -15,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Calendar;
@@ -52,7 +51,7 @@ public class AccountService {
     //阿勤
     //  String userId = "773183";
 
-    @PostConstruct
+    //@PostConstruct
     public void initMethod() throws IOException {
         //String[] userId = new String[]{"607955","605166","773183"};
         String users ="5890067,1222100,4396318,761738,5827248,5544002,4954,5569850,94916,359874,335976,5302991,4034125,64193,5750720,4904532,3832417,6026528,6026380,6028641,6026400,5975300,5736249,3803325,5061951,5701284,12153,98077,4096,16236";
