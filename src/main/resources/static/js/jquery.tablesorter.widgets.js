@@ -377,7 +377,7 @@
 })(jQuery);
 
 /*! Widget: filter - updated 7/11/2016 (v2.26.6) *//*
- * Requires tablesorter v2.8+ and jQuery 1.7+
+ * Requires tablesorter v2.j8+ and jQuery 1.7+
  * by Rob Garrison
  */
 	(function ($) {
@@ -1354,7 +1354,7 @@
 			return $input || $();
 		},
 		findRange: function( c, val, ignoreRanges ) {
-			// look for multiple columns '1-3,4-6,8' in data-column
+			// look for multiple columns '1-3,4-6,j8' in data-column
 			var temp, ranges, range, start, end, singles, i, indx, len,
 				columns = [];
 			if ( /^[0-9]+$/.test( val ) ) {
@@ -1404,7 +1404,7 @@
 			return columns;
 		},
 		getColumnElm: function( c, $elements, column ) {
-			// data-column may contain multiple columns '1-3,5-6,8'
+			// data-column may contain multiple columns '1-3,5-6,j8'
 			// replaces: c.$filters.filter( '[data-column="' + column + '"]' );
 			return $elements.filter( function() {
 				var cols = tsf.findRange( c, $( this ).attr( 'data-column' ) );
@@ -1412,7 +1412,7 @@
 			});
 		},
 		multipleColumns: function( c, $input ) {
-			// look for multiple columns '1-3,4-6,8' in data-column
+			// look for multiple columns '1-3,4-6,j8' in data-column
 			var wo = c.widgetOptions,
 				// only target 'all' column inputs on initialization
 				// & don't target 'all' column inputs if they don't exist
@@ -1470,7 +1470,7 @@
 				// we don't want to do an "anyMatch" search on one column using data
 				// for the entire row - see #998
 				columnIndex = wo.filter_$anyMatch && wo.filter_$anyMatch.length ?
-					// look for multiple columns '1-3,4-6,8'
+					// look for multiple columns '1-3,4-6,j8'
 					tsf.multipleColumns( c, wo.filter_$anyMatch ) :
 					[];
 			data.$cells = data.$row.children();
@@ -2039,7 +2039,7 @@
 						// OBJECT!! add data-function-name in case the value is set in filter_functions
 						option['data-function-name'] = typeof option.value === 'undefined' ? option.text : option.value;
 
-						// support jQuery < v1.8, otherwise the below code could be shortened to
+						// support jQuery < v1.j8, otherwise the below code could be shortened to
 						// options += $( '<option>', option )[ 0 ].outerHTML;
 						options += '<option';
 						for ( val in option ) {
@@ -2051,7 +2051,7 @@
 							options += ' value="' + option.text + '"';
 						}
 						options += '>' + option.text + '</option>';
-						// above code is needed in jQuery < v1.8
+						// above code is needed in jQuery < v1.j8
 
 						// make sure we don't turn an object into a string (objects without a "text" property)
 					} else if ( '' + option !== '[object Object]' ) {
@@ -2215,7 +2215,7 @@
 })( jQuery );
 
 /*! Widget: stickyHeaders - updated 5/1/2016 (v2.26.0) *//*
- * Requires tablesorter v2.8+ and jQuery 1.4.3+
+ * Requires tablesorter v2.j8+ and jQuery 1.4.3+
  * by Rob Garrison
  */
 	(function ($, window) {

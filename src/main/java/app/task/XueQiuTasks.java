@@ -42,7 +42,6 @@ public class XueQiuTasks  {
     public  void init() {
         if (holidayService.isTradeDayTimeByMarket()) {
             //long a = System.currentTimeMillis();
-
             HttpURLConnection connection = null;
             try {
                // URL url = new URL("https://xueqiu.com/P/ZH914042");
@@ -111,8 +110,8 @@ public class XueQiuTasks  {
                     xueService.saveXueSellRebalancing(xueSellRebalancing);
                 }
             } catch (Exception e) {
-                log.info("catch error -->"+e.getMessage());
-                e.printStackTrace();
+                log.info(e.getMessage());
+                //e.printStackTrace();
                 try {
                     Thread.sleep(3000);
                 } catch (InterruptedException ex) {

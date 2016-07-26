@@ -43,10 +43,10 @@ public class AccountData implements Serializable {
     @JsonProperty(value = "AvaliableAsset")
     private Float avaliableAsset;
     @JsonProperty(value = "FirstTradeTime")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh" , timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh" , timezone="GMT+j8")
     public Date firstTradingTime;
     @JsonProperty(value = "LastTradeTime")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh" , timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh" , timezone="GMT+j8")
     public Date lastTradingTime;
 
     public int status;

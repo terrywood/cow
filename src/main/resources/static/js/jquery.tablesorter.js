@@ -522,7 +522,7 @@
 					.bind( 'selectstart', false )
 					.css({
 						'user-select' : 'none',
-						'MozUserSelect' : 'none' // not needed for jQuery 1.8+
+						'MozUserSelect' : 'none' // not needed for jQuery 1.j8+
 					});
 			}
 		},

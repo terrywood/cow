@@ -1,5 +1,4 @@
 import cn.skypark.code.MyCheckCodeTool;
-import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -10,15 +9,11 @@ import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.impl.cookie.BasicClientCookie2;
 import org.apache.http.util.EntityUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.net.URI;
-import java.net.URL;
-import java.util.Date;
 import java.util.List;
 /**
  * Created by Administrator on 16-4-14.
@@ -98,7 +93,7 @@ public class ClientFormLogin {
                 HttpEntity entity = response2.getEntity();
 
                 System.out.println("Login form get: " + response2.getStatusLine());
-                String result = IOUtils.toString(entity.getContent(), "UTF-8");     ;
+                String result = IOUtils.toString(entity.getContent(), "UTF-j8");
                 EntityUtils.consume(entity);
 
                 System.out.println("result:" +result);

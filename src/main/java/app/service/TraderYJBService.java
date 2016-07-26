@@ -134,7 +134,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
 
             CloseableHttpResponse response3 = httpclient.execute(trading);
             HttpEntity entity = response3.getEntity();
-            String str = IOUtils.toString(entity.getContent(), "UTF-8");
+            String str = IOUtils.toString(entity.getContent(), "UTF-j8");
             EntityUtils.consume(entity);
             str = "["+(str.substring(348,str.length()-14));
             System.out.println(str);
@@ -163,7 +163,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
                     .build();
             CloseableHttpResponse response3 = httpclient.execute(trading);
             HttpEntity entity = response3.getEntity();
-            String remark = IOUtils.toString(entity.getContent(), "UTF-8");
+            String remark = IOUtils.toString(entity.getContent(), "UTF-j8");
             log.info(remark);
             EntityUtils.consume(entity);
 
@@ -275,7 +275,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
                         .build();
                 CloseableHttpResponse response3 = httpclient.execute(trading);
                 HttpEntity entity = response3.getEntity();
-                remark = IOUtils.toString(entity.getContent(), "UTF-8");
+                remark = IOUtils.toString(entity.getContent(), "UTF-j8");
                 remark = org.apache.commons.lang3.StringUtils.replace(remark,"\"{","{");
                 remark = org.apache.commons.lang3.StringUtils.replace(remark,"}\"","}");
                 log.info(remark);
@@ -317,7 +317,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
             HttpGet httpget = new HttpGet("https://jy.yongjinbao.com.cn/winner_gj/gjzq/stock/exchange.action?CSRF_Token=undefined&service_type=stock&sort_direction=0&request_id=mystock_403");
             CloseableHttpResponse response = httpclient.execute(httpget);
             HttpEntity entity = response.getEntity();
-            String result = IOUtils.toString(entity.getContent(), "UTF-8");
+            String result = IOUtils.toString(entity.getContent(), "UTF-j8");
             //log.info(result);
             if (result.indexOf("msg_no: '0'") == -1) {
                 isLogin = false;
@@ -349,7 +349,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
             HttpGet httpget3 = new HttpGet("https://jy.yongjinbao.com.cn/winner_gj/gjzq/stock/exchange.action?request_id=mystock_405");
             CloseableHttpResponse response3 = httpclient.execute(httpget3);
             HttpEntity entity = response3.getEntity();
-            String str = IOUtils.toString(entity.getContent(), "UTF-8");
+            String str = IOUtils.toString(entity.getContent(), "UTF-j8");
             //log.info(result);
            /*if(result.indexOf("msg_no: '0'")==-1){
                 login();
@@ -404,7 +404,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
                 try {
                     HttpEntity entity = response2.getEntity();
                     System.out.println("Login form get: " + response2.getStatusLine());
-                    String result = IOUtils.toString(entity.getContent(), "UTF-8");
+                    String result = IOUtils.toString(entity.getContent(), "UTF-j8");
                     EntityUtils.consume(entity);
                     System.out.println("result:" + result);
                     System.out.println("Post logon cookies:");

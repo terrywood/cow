@@ -117,7 +117,7 @@ public class JacksonDemo {
                 connection.setRequestMethod("GET");
                 connection.setRequestProperty("Cookie", entity.getCookie());
                 connection.connect();
-                String result = IOUtils.toString(connection.getInputStream(), "UTF-8");
+                String result = IOUtils.toString(connection.getInputStream(), "UTF-j8");
                 System.out.println(result);
 
 

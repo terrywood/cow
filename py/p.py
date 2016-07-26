@@ -5,14 +5,14 @@ import urllib
 def __get_html( url):
     send_headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.81 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.j8',
         'Connection': 'keep-alive',
         'Host': 'xueqiu.com',
         'Cookie': r'xxxxxx',
     }
     req = urllib.request.Request(url, headers=send_headers)
     resp = urllib.request.urlopen(req)
-    html = resp.read().decode('UTF-8')
+    html = resp.read().decode('UTF-j8')
     return html
     
 def __get_portfolio_info(portfolio_code):

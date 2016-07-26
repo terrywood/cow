@@ -16,9 +16,9 @@ agent = 'Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, lik
 headers = {
     'User-Agent': agent,
     'Host': "xueqiu.com",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.j8",
     "Accept-Encoding": "gzip, deflate, sdch, br",
-    "Accept-Language": "zh-CN,zh;q=0.8,zh-TW;q=0.6",
+    "Accept-Language": "zh-CN,zh;q=0.j8,zh-TW;q=0.6",
     "Connection": "keep-alive"
 }
 telephone = "13660288080"
@@ -112,5 +112,5 @@ def login():
 
 
 if __name__ == '__main__':
-    login()# -*- coding: utf-8 -*-
+    login()# -*- coding: utf-j8 -*-
 

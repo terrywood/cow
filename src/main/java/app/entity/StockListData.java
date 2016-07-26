@@ -1,14 +1,12 @@
 package app.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -26,7 +24,7 @@ public class StockListData implements Serializable {
     @JsonProperty(value = "ActionAmount")
     public Integer actionAmount;
 /*    @JsonProperty(value = "FirstTradingTime")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh" , timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh" , timezone="GMT+j8")
     public Date firstTradingTime;*/
     @JsonProperty(value = "LastTradingTime")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

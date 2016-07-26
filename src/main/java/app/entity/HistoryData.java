@@ -20,7 +20,7 @@ public class HistoryData {
     public Long listID;
 
     @JsonProperty(value = "AddTime")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh" , timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh" , timezone="GMT+j8")
     public Date addTime;
 
 /*    @JsonProperty(value = "ClearFlag")

@@ -17,7 +17,6 @@ public class XueQieDemo {
 
     public void stocklistitem() throws ParseException, IOException {
 
-
     }
 
 
