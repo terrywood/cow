@@ -36,8 +36,12 @@ public class XueService {
     }
 
     public void saveXueSellRebalancing(XueSellRebalancing entity){
+        for(XueHistories obj : entity.getXueHistories()){
+            obj.setRebalancing(entity);
+        }
+
         xueSellRebalancingRepository.save(entity);
-        //xueHistoriesRepository.save(entity.getXueHistories());
+
     }
      /*
    @Caching(put = { @CachePut(value="movieFindCache", key="#entity.listID") },

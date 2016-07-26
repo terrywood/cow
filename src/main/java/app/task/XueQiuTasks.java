@@ -33,19 +33,20 @@ public class XueQiuTasks  {
     @Autowired
     TraderService traderService;
 
-    Double totalBalance=1000000d ; //100W
+    Double totalBalance=900000d ; //100W
 
     @Autowired
     HolidayService holidayService;
 
     @Scheduled(fixedDelay = 1)
     public  void init() {
-        //if (holidayService.isTradeDayTimeByMarket()) {
+        if (holidayService.isTradeDayTimeByMarket()) {
+            //long a = System.currentTimeMillis();
 
             HttpURLConnection connection = null;
             try {
-                URL url = new URL("https://xueqiu.com/P/ZH914042");
-                //url = new URL("https://xueqiu.com/P/ZH902949"); // cheng lao shi
+               // URL url = new URL("https://xueqiu.com/P/ZH914042");
+                URL url = new URL("https://xueqiu.com/P/ZH902949"); // cheng lao shi
                 connection = (HttpURLConnection) url.openConnection();
                 InputStream in = connection.getInputStream();
                 BufferedReader bd = new BufferedReader(new InputStreamReader(in));
@@ -62,8 +63,6 @@ public class XueQiuTasks  {
                 XueSellRebalancing xueSellRebalancing = xueReturnJson.getSellRebalancing();
                 XueSellRebalancing entity =xueService.findXueSellRebalancingByPK(xueSellRebalancing.getId());
                 if(entity ==null){
-
-
                     List<XueHistories>  histories = xueSellRebalancing.getXueHistories();
                     for(XueHistories obj : histories){
                         String symbol =obj.getStock_symbol();
@@ -76,22 +75,27 @@ public class XueQiuTasks  {
                             market ="1";
                             code = org.apache.commons.lang3.StringUtils.removeStart(symbol,"SH");
                         }
-
                         Double weight = obj.getWeight();
                         Double preWeight = obj.getPrev_weight_adjusted()==null?0d:obj.getPrev_weight_adjusted();
                         Double price = Double.valueOf(obj.getPrice());
-
                         if(weight>preWeight){
                             type="1";
                             //maybe comment ,fixed ignore
-                            XueSellRebalancing prev = xueService.findXueSellRebalancingByPK(entity.getPrev_bebalancing_id());
+                         /*   XueSellRebalancing prev = null;
+                            if(xueSellRebalancing.getPrev_bebalancing_id()!=null){
+                                prev = xueService.findXueSellRebalancingByPK(xueSellRebalancing.getPrev_bebalancing_id());
+                            }
                             if(prev==null){
                                 Double _amount =  ((totalBalance * weight)/100d) / price/100d;
                                 amount = _amount.intValue()*100;
                             }else{
                                 Double _amount =  ((totalBalance * (weight-preWeight))/100d) / price/100d;
                                 amount = _amount.intValue()*100;
-                            }
+                            }*/
+
+                            Double _amount =  ((totalBalance * (weight-preWeight))/100d) / price/100d;
+                            amount = _amount.intValue()*100;
+
                         }else{
                             type="2";
                             if(weight==0d){
@@ -107,19 +111,25 @@ public class XueQiuTasks  {
                     xueService.saveXueSellRebalancing(xueSellRebalancing);
                 }
             } catch (Exception e) {
+                log.info("catch error -->"+e.getMessage());
                 e.printStackTrace();
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
             }
 
+            //long b = (System.currentTimeMillis()-a);
 
-
-  /*      } else {
+      } else {
             log.info("now is not trade Day");
             try {
                 Thread.sleep(1000 * 60 * 10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }*/
+        }
 
     }
 
