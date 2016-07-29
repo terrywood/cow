@@ -123,6 +123,7 @@ public class XueQiuTasks  {
 
       } else {
             log.info("now is not trade Day");
+            XueSellRebalancing entity =xueService.findXueSellRebalancingByPK(1l);
             try {
                 Thread.sleep(1000 * 60 * 10);
             } catch (InterruptedException e) {

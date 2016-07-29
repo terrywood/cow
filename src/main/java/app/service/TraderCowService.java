@@ -83,7 +83,7 @@ public class TraderCowService implements TraderService {
     public void trading(String market, Long id, String code, Integer amount, String price, String type, Boolean fast) {
         String remark = null;
 
-        System.out.println("code["+code+"] amount["+amount+"] price["+price+"] type["+type+"] id["+id+"] ");
+        log.info("code["+code+"] amount["+amount+"] price["+price+"] type["+type+"] id["+id+"] ");
 
         //if( Double.valueOf(price)*amount > 100000){
 

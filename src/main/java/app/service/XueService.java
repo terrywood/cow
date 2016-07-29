@@ -34,14 +34,11 @@ public class XueService {
     public List<XueHistories> findHistoriesByRBID(Long rbid){
         return  xueHistoriesRepository.findByRebalancing_id(rbid);
     }
-
     public void saveXueSellRebalancing(XueSellRebalancing entity){
         for(XueHistories obj : entity.getXueHistories()){
             obj.setRebalancing(entity);
         }
-
         xueSellRebalancingRepository.save(entity);
-
     }
      /*
    @Caching(put = { @CachePut(value="movieFindCache", key="#entity.listID") },
