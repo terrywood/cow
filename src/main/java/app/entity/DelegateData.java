@@ -41,7 +41,7 @@ public class DelegateData {
     @JsonProperty(value = "DelegateType")
     public String delegateType; // 1 buy ; 2 sell
     @JsonProperty(value = "DelegateUnitPrice")
-    public String delegateUnitPrice;
+    public Double delegateUnitPrice;
     @JsonProperty(value = "Market")
     public String market; // 1 sh ; 2 sz
     @JsonProperty(value = "StockCode")

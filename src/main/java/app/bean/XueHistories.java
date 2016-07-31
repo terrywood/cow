@@ -25,7 +25,7 @@ public class XueHistories implements Serializable {
 
     private Double prev_weight_adjusted;
     private Double weight;
-    private String price;
+    private Double price;
 
 
 

@@ -35,7 +35,7 @@ public class HistoryData {
     @JsonProperty(value = "TransactionAmount")
     public Integer transactionAmount;
     @JsonProperty(value = "TransactionUnitPrice")
-    public Float transactionUnitPrice;
+    public Double transactionUnitPrice;
 
 /*    @JsonIgnore
     @LastModifiedDate

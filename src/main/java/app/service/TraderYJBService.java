@@ -134,7 +134,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
 
             CloseableHttpResponse response3 = httpclient.execute(trading);
             HttpEntity entity = response3.getEntity();
-            String str = IOUtils.toString(entity.getContent(), "UTF-j8");
+            String str = IOUtils.toString(entity.getContent(), "UTF-8");
             EntityUtils.consume(entity);
             str = "["+(str.substring(348,str.length()-14));
             System.out.println(str);
@@ -181,22 +181,22 @@ public class TraderYJBService implements TraderService, InitializingBean {
 
     @Override
     @CacheEvict(value = "traderCache", key = "#id")
-    public  void trading(String market, Long id, String code, Integer _amount, String price, String type, Boolean fast) {
-        if( Double.valueOf(price)*_amount > 100000){
+    public  void trading(String market, Long id, String code, Integer _amount, Double price, String type, Boolean fast) {
+        if( _amount > 0){
             Func302 func302 =this.yjbAccountOrderMap.get(code);
             if(func302!=null){
                 log.info("cancel entrust and order new item :" + func302);
                 cancelEntrustDo(code,func302.getEntrust_no());
                 yjbAccountOrderMap.remove(code);
             }
-            int amount = tradingDo(market, id, code, price, type, fast);
+            int amount = tradingDo(market, id, code, price, type, fast, _amount);
             if(amount==0){
                 cancelEntrust(code);
                 try {
                     Thread.sleep(10000); //wait 10 sec;
                     yjbAccount();
                     log.info("- retry to call api-----id[" + id + "] code[" + code + "]  price[" + price + "] type[" + type + "]");
-                    tradingDo(market, id, code, price, type, fast); // retry
+                    tradingDo(market, id, code, price, type, fast,_amount ); // retry
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -209,7 +209,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
             trader.setType(type);
             trader.setDelegateID(id);
             trader.setTransactionAmount(0);
-            trader.setTransactionUnitPrice(Float.valueOf(price));
+            trader.setTransactionUnitPrice(price);
             trader.setCode(code);
             trader.setFast(fast);
             trader.setRemark("less 10W ignore getDelegateID["+id+"]");
@@ -219,7 +219,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
 
     }
 
-    public  int tradingDo(String market, Long id, String code, String price, String type, Boolean fast) {
+    public  int tradingDo(String market, Long id, String code, Double price, String type, Boolean fast, int _amount) {
         String account = null;
         String requestId = null;
         int amount = 0;
@@ -232,13 +232,14 @@ public class TraderYJBService implements TraderService, InitializingBean {
         if (type.equals("1")) {
             requestId = "buystock_302";
             Double balance;
-            if (yjbBalance < lotsBalance && yjbBalance > 0d) {
-                balance = yjbBalance;
-            } else {
-                balance = lotsBalance;
+            if ( yjbBalance > 0d) {
+                if((price * _amount) > yjbBalance){
+                    Double a = ((yjbBalance / Double.valueOf(price)) / 100d);
+                    amount = a.intValue() * 100;
+                }else{
+                    amount =_amount;
+                }
             }
-            Double a = ((balance / Double.valueOf(price)) / 100d);
-            amount = a.intValue() * 100;
         } else {
             requestId = "sellstock_302";
             YJBAccount yjbAccount = yjbAccountMap.get(code);
@@ -268,7 +269,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
                         .addParameter("entrust_prop", "0")
                         .addParameter("entrust_bs", type)
                         .addParameter("stock_code", code)
-                        .addParameter("entrust_price", price)
+                        .addParameter("entrust_price", String.valueOf(price))
                         .addParameter("entrust_amount", String.valueOf(amount))
                         .addParameter("elig_riskmatch_flag", "1")
                         .addParameter("service_type", "stock")
@@ -299,7 +300,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
         trader.setType(type);
         trader.setDelegateID(id);
         trader.setTransactionAmount(amount);
-        trader.setTransactionUnitPrice(Float.valueOf(price));
+        trader.setTransactionUnitPrice(price);
         trader.setCode(code);
         trader.setFast(fast);
         trader.setRemark(remark);

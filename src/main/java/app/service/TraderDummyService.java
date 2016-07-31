@@ -37,12 +37,12 @@ public class TraderDummyService  implements TraderService, InitializingBean {
 
     @Override
     @CacheEvict(value = "traderCache",key = "#id")
-    public void trading(String market, Long id, String code, Integer amount, String price, String type, Boolean fast) {
+    public void trading(String market, Long id, String code, Integer amount, Double price, String type, Boolean fast) {
         Trader trader = new Trader();
         trader.setType(type);
         trader.setDelegateID(id);
         trader.setTransactionAmount(amount);
-        trader.setTransactionUnitPrice(Float.valueOf(price));
+        trader.setTransactionUnitPrice(price);
         trader.setCode(code);
         trader.setFast(fast);
         trader.setRemark("dummy");

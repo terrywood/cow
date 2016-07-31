@@ -27,7 +27,7 @@ public class Trader implements Serializable {
     @JsonProperty(value = "Type")
     public String type; // 1 buy ; 2 sell
     public Integer transactionAmount;
-    public Float transactionUnitPrice;
+    public Double transactionUnitPrice;
     public String code;
     public Boolean fast;
     @Column(length = 1000)

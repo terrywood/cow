@@ -26,7 +26,6 @@ public class TraderCowService implements TraderService {
     @Autowired
     ObjectMapper jacksonObjectMapper;
     private Double lotsBalance = 100000d;
-    //private Double yjbBalance  = 100000d;
     private String userToken = "hleVEQYrnxdWRXiQjj1IN1nVq1Va7aqF37J5L8I56leXtXOhwkCl1Q**";
 
     @Override
@@ -37,7 +36,7 @@ public class TraderCowService implements TraderService {
     }
 
 
-    private String checkAmount(String code, String price, String type, Integer amount){
+    private String checkAmount(String code, Double price, String type, Integer amount){
         StringBuffer sb = new StringBuffer();
         try {
             URL url = new URL("https://swww.niuguwang.com/tr/201411/getstock.ashx?usertoken="+userToken+"&stockCode="+code+"&contest=1&s=xiaomi&version=3.5.4&packtype=1");
@@ -80,7 +79,7 @@ public class TraderCowService implements TraderService {
 
     @Override
     @CacheEvict(value = "traderCache",key = "#id")
-    public void trading(String market, Long id, String code, Integer amount, String price, String type, Boolean fast) {
+    public void trading(String market, Long id, String code, Integer amount, Double price, String type, Boolean fast) {
         String remark = null;
 
         log.info("code["+code+"] amount["+amount+"] price["+price+"] type["+type+"] id["+id+"] ");
@@ -111,7 +110,7 @@ public class TraderCowService implements TraderService {
         obj.setType(type);
         obj.setDelegateID(id);
         obj.setTransactionAmount(0);
-        obj.setTransactionUnitPrice(Float.valueOf(price));
+        obj.setTransactionUnitPrice(price);
         obj.setCode(code);
         obj.setFast(fast);
         obj.setRemark(remark);

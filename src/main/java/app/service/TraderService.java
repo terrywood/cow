@@ -9,5 +9,5 @@ public interface TraderService {
 
 
     Trader findOne(Long id);
-    void trading(String market, Long id, String code, Integer amount, String price, String type, Boolean fast);
+    void trading(String market, Long id, String code, Integer amount, Double price, String type, Boolean fast);
 }

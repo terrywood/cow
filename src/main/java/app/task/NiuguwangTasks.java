@@ -39,16 +39,28 @@ public class NiuguwangTasks implements InitializingBean {
     @Autowired
     HolidayService holidayService;
 
+    Double  generalBalance = 10000d;
+
+    private int getAmount(Double price, int amount, String type) {
+        if (price * amount <= 100000) {
+              if(type.equals("1")){
+                 Double tmp = (generalBalance/price)/100d;
+                 return tmp.intValue()*100;
+              }else{
+                return  amount;
+              }
+        }
+        return 0;
+    }
 
     public void stockListItem(StockListData stockList) throws IOException {
-        int amount = 100;
         URL url = new URL("https://swww.niuguwang.com/tr/201411/stocklistitem.ashx?id=" + stockList.getListID() + "&s=xiaomi&version=3.4.4&packtype=1");
         StockList bean = jacksonObjectMapper.readValue(url, StockList.class);
         for (HistoryData data : bean.getHistoryData()) {
             if (!historyDataRepository.exists(data.getDelegateID())) {
                 String type = data.getType();
-                Float price =  data.getTransactionUnitPrice() ;
-                String result = String.valueOf(price);
+                Double price = data.getTransactionUnitPrice();
+               // String result = String.valueOf(price);
                 /*if (type.equals("1")) {
                     price = data.getTransactionUnitPrice() * 1.025f;
                     result = String.format("%.2f", price);
@@ -56,10 +68,11 @@ public class NiuguwangTasks implements InitializingBean {
                     price = data.getTransactionUnitPrice() * 0.97f;
                     result = String.format("%.2f", price);
                 }*/
-                if(System.currentTimeMillis()-data.getAddTime().getTime()<= (1000 *60 *10)){
+                if (System.currentTimeMillis() - data.getAddTime().getTime() <= (1000 * 60 * 10)) {
                     //call 券商API
-                    if(traderService.findOne(data.getDelegateID())==null){
-                        traderService.trading(stockList.getMarket(), data.getDelegateID(), stockList.getStockCode(), data.getTransactionAmount(), result, type, false);
+                    if (traderService.findOne(data.getDelegateID()) == null) {
+                        int amount = getAmount(price,data.getTransactionAmount(),type);
+                        traderService.trading(stockList.getMarket(), data.getDelegateID(), stockList.getStockCode(), amount, price, type, false);
                     }
                 }
                 historyDataRepository.save(data);
@@ -69,13 +82,13 @@ public class NiuguwangTasks implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-       // ScheduledExecutorService service = Executors.newScheduledThreadPool(10);
+        // ScheduledExecutorService service = Executors.newScheduledThreadPool(10);
         /*guo jin*/
         // String  userId = "605166";
         //*terry*/
-       // String userId = "607955";
+        // String userId = "607955";
         //阿勤
-      //  String userId = "773183";
+        //  String userId = "773183";
       /*  List<AccountData> list  = accountRepository.findTrackAccount();
         for(AccountData accountData :list){
             String userId = accountData.getAccountID().toString();
@@ -85,24 +98,25 @@ public class NiuguwangTasks implements InitializingBean {
        */
         //service.scheduleWithFixedDelay(new Work("607955"),10,5, TimeUnit.SECONDS);
     }
- /*   class Work implements Runnable{
-        String userId ;
-        public Work(String userId) {
-            this.userId = userId;
-        }
-        @Override
-        public void run() {
-            init(userId);
-        }
-    }*/
+
+    /*   class Work implements Runnable{
+           String userId ;
+           public Work(String userId) {
+               this.userId = userId;
+           }
+           @Override
+           public void run() {
+               init(userId);
+           }
+       }*/
     //@Scheduled(fixedDelay = 1)
-    public  void init() {
+    public void init() {
         //log.info("userID:"+userId);
         if (holidayService.isTradeDayTimeByMarket()) {
-            List<AccountData> array  = accountService.findTrackAccount();
-            for(AccountData accountData :array){
+            List<AccountData> array = accountService.findTrackAccount();
+            for (AccountData accountData : array) {
                 String userId = accountData.getAccountID().toString();
-                int amount = 100;
+
                 //long times = System.currentTimeMillis();
                 URL url = null;
                 try {
@@ -110,8 +124,11 @@ public class NiuguwangTasks implements InitializingBean {
                     Account bean = jacksonObjectMapper.readValue(url, Account.class);
                     //List list = bean.getStockListData();
                     for (DelegateData data : bean.getDelegateData()) {
-                        if(traderService.findOne(data.getDelegateID())==null){
-                            traderService.trading(data.getMarket(), data.getDelegateID(), data.getStockCode(), data.getDelegateAmount(), data.getDelegateUnitPrice(), data.getDelegateType(), true);
+                        if (traderService.findOne(data.getDelegateID()) == null) {
+                            Double price = data.getDelegateUnitPrice();
+                            int amount = getAmount(price,data.getDelegateAmount(),data.getDelegateType());
+                            traderService.trading(data.getMarket(), data.getDelegateID(), data.getStockCode(), amount, price, data.getDelegateType(), true);
+
                         }
                     }
                     //handle clear stock
@@ -167,8 +184,6 @@ public class NiuguwangTasks implements InitializingBean {
         }
 
     }
-
-
 
 
 }
