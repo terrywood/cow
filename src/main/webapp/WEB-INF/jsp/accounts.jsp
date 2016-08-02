@@ -73,7 +73,7 @@
                 <c:forEach items="${pageList}" var="item">
                     <tr>
                         <td>
-                            <a target="_blank" href="https://swww.niuguwang.com/tr/201411/account.ashx?aid=${item.accountID}">${item.accountID}</a>
+                            <a target="_blank" href="accounts/${item.accountID}">${item.accountID}</a>
                         </td>
                         <td><p>${item.userName}</p></td>
                         <td>${item.equity}</td>
@@ -89,7 +89,6 @@
                              AccountDaily first = dailyList.get(dailyList.size()-1);
                              Float percent = (last.getEquity()/first.getEquity())-1f;
                              out.println(""+ percentFormat.format(percent)+"");
-
                           %>
                         </td>
                         <td> ${item.winRatio}%</td>
@@ -97,7 +96,6 @@
                             out.println( sdf.format(first.getDay()) + "-" +sdf.format(last.getDay())+"");
                         %></td>
                         <td><img width="100" src="${item.yieldUrl}"/></td>
-
                     </tr>
                 </c:forEach>
                 </tbody>

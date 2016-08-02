@@ -118,9 +118,7 @@ public class XueQiuTasks  {
                     ex.printStackTrace();
                 }
             }
-
             //long b = (System.currentTimeMillis()-a);
-
       } else {
             log.info("now is not trade Day");
             XueSellRebalancing entity =xueService.findXueSellRebalancingByPK(1l);
@@ -130,10 +128,5 @@ public class XueQiuTasks  {
                 e.printStackTrace();
             }
         }
-
     }
-
-
-
-
 }

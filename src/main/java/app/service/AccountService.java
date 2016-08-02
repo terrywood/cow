@@ -54,7 +54,7 @@ public class AccountService {
     //阿勤
     //  String userId = "773183";
 
-    @PostConstruct
+    //@PostConstruct
     public void initMethod() throws IOException {
         cronJob();
     }

@@ -23,6 +23,7 @@ import app.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.text.ParseException;
@@ -35,7 +36,7 @@ public class SampleController {
     @Autowired
     AccountService accountService;
     @RequestMapping("/accounts")
-    public String greeting(/*
+    public String accounts(/*
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "20") int size,
             @RequestParam(value = "date") @DateTimeFormat(pattern = "yyyy-MM-dd") java.util.Date date,*/
@@ -49,6 +50,12 @@ public class SampleController {
         model.addAttribute("daily",map);
         model.addAttribute("pageList", list);
         return "accounts";
+    }
+    @RequestMapping("/accounts/{id}")
+    public String detail( Model model,
+                          @PathVariable("id") String id) throws ParseException {
+        model.addAttribute("id",id);
+        return "detail";
     }
 
 	/*@Autowired

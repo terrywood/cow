@@ -32,8 +32,8 @@ public class NiuguwangTasks implements InitializingBean {
     HistoryDataRepository historyDataRepository;
     @Autowired
     TraderService traderService;
-    @Autowired
-    TraderSessionService traderSessionService;
+  /*  @Autowired
+    TraderSessionService traderSessionService;*/
     @Autowired
     AccountService accountService;
     @Autowired
