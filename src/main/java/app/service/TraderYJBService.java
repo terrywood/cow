@@ -52,7 +52,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
     private Map<String, YJBAccount> yjbAccountMap = new HashMap<>();
     private Map<String, Func302> yjbAccountOrderMap = new HashMap<>();
     private Double yjbBalance;
-    private Double lotsBalance = 10000d;
+   // private Double lotsBalance = 10000d;
     private Boolean isLogin = false;
     BasicCookieStore cookieStore;
     TraderSession entity;
@@ -147,7 +147,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
             String str = IOUtils.toString(entity.getContent(), "UTF-8");
             EntityUtils.consume(entity);
             str = "["+(str.substring(348,str.length()-14));
-            System.out.println(str);
+           // System.out.println(str);
             if(str.length()>50){
                 List<YJBEntrust> beanList = jacksonObjectMapper.readValue(str, new TypeReference<List<YJBEntrust>>() {});
                 System.out.println(beanList);
@@ -370,7 +370,8 @@ public class TraderYJBService implements TraderService, InitializingBean {
             this.yjbBalance = yjbBalance.getEnableBalance();
             EntityUtils.consume(entity);
         } catch (Exception e) {
-            e.printStackTrace();
+           // e.printStackTrace();
+            log.info(e.getMessage());
         }
     }
 
@@ -437,37 +438,10 @@ public class TraderYJBService implements TraderService, InitializingBean {
             long end = System.currentTimeMillis() - start;
             log.info("use times :" + end);
         } catch (Exception e) {
-            e.printStackTrace();
+           // e.printStackTrace();
+            log.info(e.getMessage());
         }
     }
-/*
-    public void cancelEntrust(String code,String account,String market){
-
-            try {
-                CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore)
-                        .setUserAgent(userAgent)
-                        .build();
-                HttpUriRequest trading = RequestBuilder.get()
-                        .setUri(new URI("https://jy.yongjinbao.com.cn/winner_gj/gjzq/stock/exchange.action"))
-                        .addParameter("CSRF_Token", "undefined")
-                        .addParameter("request_id", "chedan_304")
-                        .addParameter("stock_account", account)
-                        .addParameter("exchange_type", market)
-                        .addParameter("entrust_no", entrustNo)
-                        .addParameter("stock_code",code )
-                        .build();
-                CloseableHttpResponse response3 = httpclient.execute(trading);
-                HttpEntity entity = response3.getEntity();
-                System.out.println(EntityUtils.toString(entity));
-                EntityUtils.consume(entity);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-    }*/
-
-
-
 /*
  public static void main(String[] args) throws ParseException, IOException {
         TraderYJBService service = new TraderYJBService();
@@ -481,8 +455,5 @@ public class TraderYJBService implements TraderService, InitializingBean {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }*/
-
-
 }
