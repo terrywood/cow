@@ -33,7 +33,7 @@ public class XueQiuTasks  {
     @Autowired
     TraderService traderService;
 
-    Double totalBalance=900000d ; //100W
+    Double totalBalance=200000d ; //20W
 
     @Autowired
     HolidayService holidayService;
@@ -113,7 +113,7 @@ public class XueQiuTasks  {
                 log.info(e.getMessage());
                 //e.printStackTrace();
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(5000);
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
                 }

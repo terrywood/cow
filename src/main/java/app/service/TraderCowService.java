@@ -16,7 +16,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.net.URL;
-@Service("TraderService")
+
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @Lazy(value = false)
 public class TraderCowService implements TraderService {

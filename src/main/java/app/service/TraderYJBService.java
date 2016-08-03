@@ -27,6 +27,8 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -35,7 +37,7 @@ import java.net.URI;
 import java.util.*;
 
 
-
+@Service("TraderService")
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @Lazy(value = false)
 public class TraderYJBService implements TraderService, InitializingBean {
@@ -63,31 +65,39 @@ public class TraderYJBService implements TraderService, InitializingBean {
         this.cookieStore = new BasicCookieStore();
         this.entity = new TraderSession();
         //guo jin
+
+     /*
         entity.setBrand("yjb");
         entity.setShAccount("A491467753");
         entity.setSzAccount("0126862343");
         entity.setSid("40132172");
         entity.setPassword("A+9BQUFnQUJBQUFnQVRuZnNuOE1ZTEJjOEJRWlE4VU9QZzRDc1l0Skx2VjlKUGFQZ1dabjZBdDJmNQ==");
-
+*/
 
         // System.out.println("yjbAccount afterPropertiesSet begin-----------------------------");
-/*
+
         //Terry
         entity.setSid("40128457");
         entity.setShAccount("A131806813");
         entity.setSzAccount("0100368361");
         entity.setPassword("A+9BQUFnQUJBQUJRQ0VuWlY4UlNrMjh0RlVVOEN5dFpzOFVPUGc0Q3NZdEJVRHRaSlJMeUFQM2taSw==");
-*/
+
       //  login();
+        if (holidayService.isTradeDayTimeByMarket()) {
+            cornJob();
+        }
     }
 
-   // @Scheduled(cron = "0/30 * 9-16 * * MON-FRI")
+    @Scheduled(cron = "0/30 * 9-16 * * MON-FRI")
     public void cornJob() {
         if (holidayService.isTradeDayTimeByMarket()) {
             if(isLogin){
                 yjbAccount();
                 balance();
                 updateYjbAccountOrderMap();
+                log.info("yjbBalance="+yjbBalance);
+                log.info("yjbAccountMap="+yjbAccountMap);
+                log.info("yjbAccountOrderMap="+yjbAccountOrderMap);
             }else{
                 login();
             }
@@ -203,7 +213,6 @@ public class TraderYJBService implements TraderService, InitializingBean {
             }
 
         }else{
-
             log.info("less 10W ignore getDelegateID["+id+"]");
             Trader trader = new Trader();
             trader.setType(type);
@@ -405,7 +414,7 @@ public class TraderYJBService implements TraderService, InitializingBean {
                 try {
                     HttpEntity entity = response2.getEntity();
                     System.out.println("Login form get: " + response2.getStatusLine());
-                    String result = IOUtils.toString(entity.getContent(), "UTF-j8");
+                    String result = IOUtils.toString(entity.getContent(), "UTF-8");
                     EntityUtils.consume(entity);
                     System.out.println("result:" + result);
                     System.out.println("Post logon cookies:");
