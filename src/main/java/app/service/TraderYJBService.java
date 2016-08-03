@@ -95,9 +95,9 @@ public class TraderYJBService implements TraderService, InitializingBean {
                 yjbAccount();
                 balance();
                 updateYjbAccountOrderMap();
-                log.info("yjbBalance="+yjbBalance);
+       /*         log.info("yjbBalance="+yjbBalance);
                 log.info("yjbAccountMap="+yjbAccountMap);
-                log.info("yjbAccountOrderMap="+yjbAccountOrderMap);
+                log.info("yjbAccountOrderMap="+yjbAccountOrderMap);*/
             }else{
                 login();
             }
