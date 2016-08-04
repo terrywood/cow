@@ -79,22 +79,8 @@ public class XueQiuTasks  {
                         Double price = Double.valueOf(obj.getPrice());
                         if(weight>preWeight){
                             type="1";
-                            //maybe comment ,fixed ignore
-                         /*   XueSellRebalancing prev = null;
-                            if(xueSellRebalancing.getPrev_bebalancing_id()!=null){
-                                prev = xueService.findXueSellRebalancingByPK(xueSellRebalancing.getPrev_bebalancing_id());
-                            }
-                            if(prev==null){
-                                Double _amount =  ((totalBalance * weight)/100d) / price/100d;
-                                amount = _amount.intValue()*100;
-                            }else{
-                                Double _amount =  ((totalBalance * (weight-preWeight))/100d) / price/100d;
-                                amount = _amount.intValue()*100;
-                            }*/
-
                             Double _amount =  ((totalBalance * (weight-preWeight))/100d) / price/100d;
                             amount = _amount.intValue()*100;
-
                         }else{
                             type="2";
                             if(weight==0d){
@@ -111,7 +97,6 @@ public class XueQiuTasks  {
                 }
             } catch (Exception e) {
                 log.info(e.getMessage());
-                //e.printStackTrace();
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException ex) {

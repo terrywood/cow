@@ -94,7 +94,8 @@ public class TraderYJBService implements TraderService, InitializingBean {
             if(isLogin){
                 yjbAccount();
                 balance();
-                updateYjbAccountOrderMap();
+               // updateYjbAccountOrderMap();
+
        /*         log.info("yjbBalance="+yjbBalance);
                 log.info("yjbAccountMap="+yjbAccountMap);
                 log.info("yjbAccountOrderMap="+yjbAccountOrderMap);*/
@@ -150,12 +151,13 @@ public class TraderYJBService implements TraderService, InitializingBean {
            // System.out.println(str);
             if(str.length()>50){
                 List<YJBEntrust> beanList = jacksonObjectMapper.readValue(str, new TypeReference<List<YJBEntrust>>() {});
-                System.out.println(beanList);
+                //log.info(beanList.toString());
                 return  beanList;
             }
 
         }catch (Exception e){
-            e.printStackTrace();
+            log.info(e.getMessage());
+            //e.printStackTrace();
         }
         return  Collections.emptyList();
     }
@@ -193,12 +195,15 @@ public class TraderYJBService implements TraderService, InitializingBean {
     @CacheEvict(value = "traderCache", key = "#id")
     public  void trading(String market, Long id, String code, Integer _amount, Double price, String type, Boolean fast) {
         if( _amount > 0){
-            Func302 func302 =this.yjbAccountOrderMap.get(code);
+
+   /*         Func302 func302 =this.yjbAccountOrderMap.get(code);
             if(func302!=null){
                 log.info("cancel entrust and order new item :" + func302);
                 cancelEntrustDo(code,func302.getEntrust_no());
                 yjbAccountOrderMap.remove(code);
             }
+            */
+
             int amount = tradingDo(market, id, code, price, type, fast, _amount);
             if(amount==0){
                 cancelEntrust(code);
@@ -346,7 +351,8 @@ public class TraderYJBService implements TraderService, InitializingBean {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.info(e.getMessage());
+            //e.printStackTrace();
         }
     }
 

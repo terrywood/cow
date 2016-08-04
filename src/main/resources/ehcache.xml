@@ -61,7 +61,7 @@
            transactionalMode="off">
         <persistence strategy="localTempSwap" />
     </cache>
-    <cache name="findXueSellRebalancingByPK"
+    <cache name="xueSellRebalancingByPK"
            maxEntriesLocalHeap="10000"
            maxEntriesLocalDisk="1000"
            eternal="false"
@@ -71,7 +71,8 @@
            transactionalMode="off">
         <persistence strategy="localTempSwap" />
     </cache>
-    <cache name="findHistoriesByRBID"
+
+<!--    <cache name="findHistoriesByRBID"
            maxEntriesLocalHeap="10000"
            maxEntriesLocalDisk="1000"
            eternal="false"
@@ -80,6 +81,6 @@
            memoryStoreEvictionPolicy="LFU"
            transactionalMode="off">
         <persistence strategy="localTempSwap" />
-    </cache>
+    </cache>-->
 
 </ehcache>

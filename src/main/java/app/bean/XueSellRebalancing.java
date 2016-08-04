@@ -26,7 +26,7 @@ public class XueSellRebalancing implements Serializable {
     private Double cash;
 
     @JsonProperty(value = "rebalancing_histories")
-    @OneToMany(mappedBy="rebalancing", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy="rebalancing", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<XueHistories> xueHistories = new ArrayList<>();
 
 }
