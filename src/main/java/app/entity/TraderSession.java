@@ -22,9 +22,9 @@ public class TraderSession implements Serializable {
     private String szAccount;
     private String shAccount;
     private String password;
-    private String brand;
+/*    private String brand;
     @Column(length = 500)
-    private String cookie;
+    private String cookie;*/
 
 
 

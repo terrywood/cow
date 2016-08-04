@@ -47,6 +47,8 @@ public class TraderYJBService implements TraderService, InitializingBean {
     @Autowired
     TraderRepository traderRepository;
     @Autowired
+    TraderSessionService traderSessionService;
+    @Autowired
     ObjectMapper jacksonObjectMapper;
     String userAgent = "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET4.0C; .NET4.0E)";
     private Map<String, YJBAccount> yjbAccountMap = new HashMap<>();
@@ -63,25 +65,8 @@ public class TraderYJBService implements TraderService, InitializingBean {
         jacksonObjectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
         this.yjbBalance = 0d;
         this.cookieStore = new BasicCookieStore();
-        this.entity = new TraderSession();
         //guo jin
-
-     /*
-        entity.setBrand("yjb");
-        entity.setShAccount("A491467753");
-        entity.setSzAccount("0126862343");
-        entity.setSid("40132172");
-        entity.setPassword("A+9BQUFnQUJBQUFnQVRuZnNuOE1ZTEJjOEJRWlE4VU9QZzRDc1l0Skx2VjlKUGFQZ1dabjZBdDJmNQ==");
-*/
-
-        // System.out.println("yjbAccount afterPropertiesSet begin-----------------------------");
-
-        //Terry
-        entity.setSid("40128457");
-        entity.setShAccount("A131806813");
-        entity.setSzAccount("0100368361");
-        entity.setPassword("A+9BQUFnQUJBQUJRQ0VuWlY4UlNrMjh0RlVVOEN5dFpzOFVPUGc0Q3NZdEJVRHRaSlJMeUFQM2taSw==");
-
+        this.entity = traderSessionService.findOne("40128457");
       //  login();
         if (holidayService.isTradeDayTimeByMarket()) {
             cornJob();
@@ -195,7 +180,6 @@ public class TraderYJBService implements TraderService, InitializingBean {
     @CacheEvict(value = "traderCache", key = "#id")
     public  void trading(String market, Long id, String code, Integer _amount, Double price, String type, Boolean fast) {
         if( _amount > 0){
-
    /*         Func302 func302 =this.yjbAccountOrderMap.get(code);
             if(func302!=null){
                 log.info("cancel entrust and order new item :" + func302);
@@ -203,7 +187,6 @@ public class TraderYJBService implements TraderService, InitializingBean {
                 yjbAccountOrderMap.remove(code);
             }
             */
-
             int amount = tradingDo(market, id, code, price, type, fast, _amount);
             if(amount==0){
                 cancelEntrust(code);
@@ -216,7 +199,6 @@ public class TraderYJBService implements TraderService, InitializingBean {
                     e.printStackTrace();
                 }
             }
-
         }else{
             log.info("less 10W ignore getDelegateID["+id+"]");
             Trader trader = new Trader();

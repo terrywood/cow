@@ -14,11 +14,13 @@ import java.util.List;
  * Created by terry.wu on 2016/4/12 0012.
  */
 @Service
-@CacheConfig(cacheNames = "traderSession")
 public class TraderSessionService {
+
     @Autowired
     TraderSessionRepository traderSessionRepository;
-    //@Cacheable
+
+
+
     public TraderSession getSession(){
         List<TraderSession> iterable =traderSessionRepository.findAllData();
         if(iterable.size()>0){
@@ -27,16 +29,13 @@ public class TraderSessionService {
         return null;
     }
 
-    @Cacheable
-    public Iterable<TraderSession> findAll(){
-        return traderSessionRepository.findAll();
+    public TraderSession findOne(String id){
+        return traderSessionRepository.findOne(id);
     }
 
-    @CacheEvict(allEntries = true)
     public void save(TraderSession entity){
         traderSessionRepository.save(entity);
     }
-    @CacheEvict(allEntries = true)
     public void delete(String id){
         traderSessionRepository.delete(id);
     }
