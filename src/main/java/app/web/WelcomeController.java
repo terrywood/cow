@@ -29,7 +29,7 @@ import java.util.Map;
 
 @Controller
 public class WelcomeController {
-
+/*
     @Value("${application.message:Hello World}")
     private String message = "Hello World";
 
@@ -56,6 +56,6 @@ public class WelcomeController {
     @ResponseBody
     MyRestResponse handleMyRuntimeException(MyException exception) {
         return new MyRestResponse("Some data I want to send back to the client.");
-    }
+    }*/
 
 }

@@ -37,8 +37,8 @@ public class HolidayService {
             ret = false;
         } else if (hour < 9 || hour >= 15) {
             ret = false;
-        } else if (hour == 9 && minute < 15) {
-            ret = false;
+    /*    } else if (hour == 9 && minute < 15) {
+            ret = false;*/
         } else {
             String date = sdf.format(cal.getTime());
             for (String str : holidays) {
