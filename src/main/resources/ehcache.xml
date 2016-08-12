@@ -11,7 +11,7 @@
     </defaultCache>
 
     <cache name="holidayCache"
-           maxEntriesLocalHeap="10000"
+           maxEntriesLocalHeap="100"
            maxEntriesLocalDisk="1000"
            eternal="false"
            diskSpoolBufferSizeMB="20"
@@ -22,7 +22,7 @@
     </cache>
 
     <cache name="findByAccountID"
-           maxEntriesLocalHeap="10000"
+           maxEntriesLocalHeap="100"
            maxEntriesLocalDisk="1000"
            eternal="false"
            diskSpoolBufferSizeMB="20"
@@ -32,7 +32,7 @@
         <persistence strategy="localTempSwap" />
     </cache>
     <cache name="movieFindCache"
-           maxEntriesLocalHeap="10000"
+           maxEntriesLocalHeap="100"
            maxEntriesLocalDisk="1000"
            eternal="false"
            diskSpoolBufferSizeMB="20"
@@ -42,7 +42,7 @@
         <persistence strategy="localTempSwap" />
     </cache>
     <cache name="traderCache"
-           maxEntriesLocalHeap="10000"
+           maxEntriesLocalHeap="100"
            maxEntriesLocalDisk="1000"
            eternal="false"
            diskSpoolBufferSizeMB="20"
@@ -52,7 +52,7 @@
         <persistence strategy="localTempSwap" />
     </cache>
     <cache name="accountCache"
-           maxEntriesLocalHeap="10000"
+           maxEntriesLocalHeap="100"
            maxEntriesLocalDisk="1000"
            eternal="false"
            diskSpoolBufferSizeMB="20"
@@ -62,7 +62,7 @@
         <persistence strategy="localTempSwap" />
     </cache>
     <cache name="xueSellRebalancingByPK"
-           maxEntriesLocalHeap="10000"
+           maxEntriesLocalHeap="100"
            maxEntriesLocalDisk="1000"
            eternal="false"
            diskSpoolBufferSizeMB="20"

@@ -35,16 +35,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Controller
 public class SampleController {
+
     @Autowired
     AccountService accountService;
     @Autowired
@@ -108,13 +107,11 @@ public class SampleController {
         }else{
             desc = ("卖出逆回购204001!");
         }
+        desc += " [创业板:"+ String.format("%1$.2f", x2) +"  黄金:"+String.format("%1$.2f", x8)+"]";
         model.put("sh518880",hjPrice);
         model.put("sz159915",cybPrice);
         model.put("desc28",desc);
         return "index";
-
-
-
     }
 
 

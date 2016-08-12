@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,16 +28,12 @@ public class XueQiuTasks  {
     ObjectMapper objectMapper;
     @Autowired
     XueService xueService;
-
     @Autowired
     TraderService traderService;
-
     Double totalBalance=200000d ; //20W
-
     @Autowired
     HolidayService holidayService;
-
-    @Scheduled(fixedDelay = 1)
+    //@Scheduled(fixedDelay = 1)
     public  void init() {
         if (holidayService.isTradeDayTimeByMarket()) {
             //long a = System.currentTimeMillis();
