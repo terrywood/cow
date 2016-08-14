@@ -38,7 +38,7 @@ public class JacksonDemo {
 
 
     public void cow() throws ParseException, IOException {
-        URL url = new URL("https://swww.niuguwang.com/foll/api/friendmylist.ashx?usertoken=hleVEQYrnxdWRXiQjj1IN1nVq1Va7aqF37J5L8I56leXtXOhwkCl1Q**&type=2&index=1&size=60&s=xiaomi&version=3.5.4&packtype=1");
+        URL url = new URL("https://swww.niuguwang.com/foll/api/friendmylist.ashx?usertoken=hleVEQYrnxdWRXiQjj1IN1nVq1Va7aqF37J5L8I56leXtXOhwkCl1Q**&type=2&code=1&size=60&s=xiaomi&version=3.5.4&packtype=1");
         Map map = objectMapper.readValue(url,java.util.Map.class);
         List<Map> data = (List<Map>) map.get("data");
         String out = "";

@@ -43,8 +43,8 @@
 			showProcessing   : false,      // show an indeterminate timer icon in the header when the table is sorted or filtered.
 
 			headerTemplate   : '{content}',// header layout template (HTML ok); {content} = innerHTML, {icon} = <i/> // class from cssIcon
-			onRenderTemplate : null,       // function( index, template ){ return template; }, // template is a string
-			onRenderHeader   : null,       // function( index ){}, // nothing to return
+			onRenderTemplate : null,       // function( code, template ){ return template; }, // template is a string
+			onRenderHeader   : null,       // function( code ){}, // nothing to return
 
 			// *** functionality
 			cancelSelection  : true,       // prevent text selection in the header
@@ -509,7 +509,7 @@
 				// don't use $headers or IE8 throws an error - see #987
 				temp = $headers.index( $cell );
 				c.last.clickedIndex = ( temp < 0 ) ? $cell.attr( 'data-column' ) : temp;
-				// use column index if $headers is undefined
+				// use column code if $headers is undefined
 				cell = c.$headers[ c.last.clickedIndex ];
 				if ( cell && !cell.sortDisabled ) {
 					ts.initSort( c, cell, e );
@@ -536,7 +536,7 @@
 				timer = new Date();
 			}
 			// children tr in tfoot - see issue #196 & #547
-			// don't pass table.config to computeColumnIndex here - widgets (math) pass it to "quickly" index tbody cells
+			// don't pass table.config to computeColumnIndex here - widgets (math) pass it to "quickly" code tbody cells
 			c.columns = ts.computeColumnIndex( c.$table.children( 'thead, tfoot' ).children( 'tr' ) );
 			// add icon if cssIcon option exists
 			icon = c.cssIcon ?
@@ -1167,7 +1167,7 @@
 			$header[ 0 ].sortDisabled = isDisabled;
 			$header[ isDisabled ? 'addClass' : 'removeClass' ]( 'sorter-false' )
 				.attr( 'aria-disabled', '' + isDisabled );
-			// disable tab index on disabled cells
+			// disable tab code on disabled cells
 			if ( c.tabIndex ) {
 				if ( isDisabled ) {
 					$header.removeAttr( 'tabindex' );
@@ -1488,7 +1488,7 @@
 				notMultiSort = !event[ c.sortMultiSortKey ],
 				table = c.table,
 				len = c.$headers.length,
-				// get current column index
+				// get current column code
 				col = parseInt( $( cell ).attr( 'data-column' ), 10 ),
 				order = c.sortVars[ col ].order;
 
@@ -1721,7 +1721,7 @@
 		sortOn : function( c, list, callback, init ) {
 			var table = c.table;
 			c.$table.triggerHandler( 'sortStart', table );
-			// update header count index
+			// update header count code
 			ts.updateHeaderSortCount( c, list );
 			// set css for headers
 			ts.setHeadersCss( c );
@@ -2319,7 +2319,7 @@
 		},
 
 		// detach tbody but save the position
-		// don't use tbody because there are portions that look for a tbody index (updateCell)
+		// don't use tbody because there are portions that look for a tbody code (updateCell)
 		processTbody : function( table, $tb, getIt ) {
 			table = $( table )[ 0 ];
 			if ( getIt ) {

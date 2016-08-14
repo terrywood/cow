@@ -122,19 +122,19 @@
             <version>3.4</version>
         </dependency>
 
-     <dependency>
+  <!--   <dependency>
             <groupId>cn.skypark</groupId>
             <artifactId>yjb-verify-code</artifactId>
             <version>2.0</version>
-        </dependency>
+        </dependency>-->
 
-    <!--    <dependency>
+        <dependency>
             <groupId>cn.skypark.code</groupId>
             <artifactId>yjb_verify_code</artifactId>
             <version>2.0</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/yjb_verify_code.jar</systemPath>
-        </dependency>-->
+        </dependency>
 
 
 

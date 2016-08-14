@@ -45,8 +45,8 @@
 			showProcessing   : false,      // show an indeterminate timer icon in the header when the table is sorted or filtered.
 
 			headerTemplate   : '{content}',// header layout template (HTML ok); {content} = innerHTML, {icon} = <i/> // class from cssIcon
-			onRenderTemplate : null,       // function( index, template ){ return template; }, // template is a string
-			onRenderHeader   : null,       // function( index ){}, // nothing to return
+			onRenderTemplate : null,       // function( code, template ){ return template; }, // template is a string
+			onRenderHeader   : null,       // function( code ){}, // nothing to return
 
 			// *** functionality
 			cancelSelection  : true,       // prevent text selection in the header
@@ -511,7 +511,7 @@
 				// don't use $headers or IE8 throws an error - see #987
 				temp = $headers.index( $cell );
 				c.last.clickedIndex = ( temp < 0 ) ? $cell.attr( 'data-column' ) : temp;
-				// use column index if $headers is undefined
+				// use column code if $headers is undefined
 				cell = c.$headers[ c.last.clickedIndex ];
 				if ( cell && !cell.sortDisabled ) {
 					ts.initSort( c, cell, e );
@@ -538,7 +538,7 @@
 				timer = new Date();
 			}
 			// children tr in tfoot - see issue #196 & #547
-			// don't pass table.config to computeColumnIndex here - widgets (math) pass it to "quickly" index tbody cells
+			// don't pass table.config to computeColumnIndex here - widgets (math) pass it to "quickly" code tbody cells
 			c.columns = ts.computeColumnIndex( c.$table.children( 'thead, tfoot' ).children( 'tr' ) );
 			// add icon if cssIcon option exists
 			icon = c.cssIcon ?
@@ -1169,7 +1169,7 @@
 			$header[ 0 ].sortDisabled = isDisabled;
 			$header[ isDisabled ? 'addClass' : 'removeClass' ]( 'sorter-false' )
 				.attr( 'aria-disabled', '' + isDisabled );
-			// disable tab index on disabled cells
+			// disable tab code on disabled cells
 			if ( c.tabIndex ) {
 				if ( isDisabled ) {
 					$header.removeAttr( 'tabindex' );
@@ -1490,7 +1490,7 @@
 				notMultiSort = !event[ c.sortMultiSortKey ],
 				table = c.table,
 				len = c.$headers.length,
-				// get current column index
+				// get current column code
 				col = parseInt( $( cell ).attr( 'data-column' ), 10 ),
 				order = c.sortVars[ col ].order;
 
@@ -1723,7 +1723,7 @@
 		sortOn : function( c, list, callback, init ) {
 			var table = c.table;
 			c.$table.triggerHandler( 'sortStart', table );
-			// update header count index
+			// update header count code
 			ts.updateHeaderSortCount( c, list );
 			// set css for headers
 			ts.setHeadersCss( c );
@@ -2321,7 +2321,7 @@
 		},
 
 		// detach tbody but save the position
-		// don't use tbody because there are portions that look for a tbody index (updateCell)
+		// don't use tbody because there are portions that look for a tbody code (updateCell)
 		processTbody : function( table, $tb, getIt ) {
 			table = $( table )[ 0 ];
 			if ( getIt ) {
@@ -2778,7 +2778,7 @@
 				'sessionStorage' : 'localStorage',
 			$table = $(table),
 			// id from (1) options ID, (2) table 'data-table-group' attribute, (3) widgetOptions.storage_tableId,
-			// (4) table ID, then (5) table index
+			// (4) table ID, then (5) table code
 			id = options && options.id ||
 				$table.attr( options && options.group || wo && wo.storage_group || 'data-table-group') ||
 				wo && wo.storage_tableId || table.id || $('.tablesorter').index( $table ),
@@ -2813,7 +2813,7 @@
 		}
 		// allow value to be an empty string too
 		if (typeof value !== 'undefined' && window.JSON && JSON.hasOwnProperty('stringify')) {
-			// add unique identifiers = url pathname > table ID/index on page > data
+			// add unique identifiers = url pathname > table ID/code on page > data
 			if (!values[url]) {
 				values[url] = {};
 			}
@@ -3228,7 +3228,7 @@
 		// data.iExact = same as data.exact, except lowercase ( if wo.filter_ignoreCase is true; may be a number & not a string )
 		// data.cache = table cell text from cache, so it has been parsed ( & in all lower case if c.ignoreCase is true )
 		// data.cacheArray = An array of parsed content from each table cell in the row being processed
-		// data.index = column index; table = table element ( DOM )
+		// data.code = column code; table = table element ( DOM )
 		// data.parsed = array ( by column ) of boolean values ( from filter_useParsedData or 'filter-parsed' class )
 		types: {
 			or : function( c, data, vars ) {
@@ -4300,7 +4300,7 @@
 								data.filter === data.exact;
 						} else if ( typeof fxn === 'function' ) {
 							// filter callback( exact cell content, parser normalized content,
-							// filter input value, column index, jQuery row object )
+							// filter input value, column code, jQuery row object )
 							filterMatched = fxn( data.exact, data.cache, data.filter, columnIndex, data.$row, c, data );
 						} else if ( typeof fxn[ ffxn || data.filter ] === 'function' ) {
 							// selector option function
@@ -4423,7 +4423,7 @@
 							for ( indx = 0; indx < query.length; indx++ ) {
 								res = query[ indx ].split( ':' );
 								if ( res.length > 1 ) {
-									// make the column a one-based index ( non-developers start counting from one :P )
+									// make the column a one-based code ( non-developers start counting from one :P )
 									id = parseInt( res[0], 10 ) - 1;
 									if ( id >= 0 && id < c.columns ) { // if id is an integer
 										filters[ id ] = res[1];
@@ -5263,9 +5263,9 @@
 			'body.' + ts.css.resizableNoSelect + ' { -ms-user-select: none; -moz-user-select: -moz-none;' +
 				'-khtml-user-select: none; -webkit-user-select: none; user-select: none; }' +
 			'.' + ts.css.resizableContainer + ' { position: relative; height: 1px; }' +
-			// make handle z-index > than stickyHeader z-index, so the handle stays above sticky header
+			// make handle z-code > than stickyHeader z-code, so the handle stays above sticky header
 			'.' + ts.css.resizableHandle + ' { position: absolute; display: inline-block; width: 8px;' +
-				'top: 1px; cursor: ew-resize; z-index: 3; user-select: none; -moz-user-select: none; }' +
+				'top: 1px; cursor: ew-resize; z-code: 3; user-select: none; -moz-user-select: none; }' +
 			'</style>';
 		$(s).appendTo('body');
 	});

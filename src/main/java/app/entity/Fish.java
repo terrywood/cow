@@ -20,15 +20,13 @@ public class Fish {
     private Date date;
     private String work;
     private String edge;
-    private String index;
+    //private String code;
+    private String symbol;
 
-    public Fish(String index, String name) {
-        this.index = index;
+    public Fish(String symbol, String name) {
+        this.symbol = symbol;
         this.name = name;
     }
-
     public Fish() {
-
     }
-
 }

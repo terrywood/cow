@@ -4,10 +4,9 @@ import app.entity.Fish;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import java.util.Date;
+import java.util.List;
+
 public interface FishRepository extends JpaRepository<Fish, String>, JpaSpecificationExecutor {
-/*    AccountDaily findByDayAndAccountID(Date day, Long accountID);
-
-    @Query("select t from AccountDaily t where t.accountID=?1")
-    List<AccountDaily> findByAccountID(Long accountID, Pageable pageable);*/
-
+    List<Fish> findByDate(Date date);
 }

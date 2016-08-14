@@ -46,7 +46,7 @@
 				'sessionStorage' : 'localStorage',
 			$table = $(table),
 			// id from (1) options ID, (2) table 'data-table-group' attribute, (3) widgetOptions.storage_tableId,
-			// (4) table ID, then (5) table index
+			// (4) table ID, then (5) table code
 			id = options && options.id ||
 				$table.attr( options && options.group || wo && wo.storage_group || 'data-table-group') ||
 				wo && wo.storage_tableId || table.id || $('.tablesorter').index( $table ),
@@ -81,7 +81,7 @@
 		}
 		// allow value to be an empty string too
 		if (typeof value !== 'undefined' && window.JSON && JSON.hasOwnProperty('stringify')) {
-			// add unique identifiers = url pathname > table ID/index on page > data
+			// add unique identifiers = url pathname > table ID/code on page > data
 			if (!values[url]) {
 				values[url] = {};
 			}
@@ -496,7 +496,7 @@
 		// data.iExact = same as data.exact, except lowercase ( if wo.filter_ignoreCase is true; may be a number & not a string )
 		// data.cache = table cell text from cache, so it has been parsed ( & in all lower case if c.ignoreCase is true )
 		// data.cacheArray = An array of parsed content from each table cell in the row being processed
-		// data.index = column index; table = table element ( DOM )
+		// data.code = column code; table = table element ( DOM )
 		// data.parsed = array ( by column ) of boolean values ( from filter_useParsedData or 'filter-parsed' class )
 		types: {
 			or : function( c, data, vars ) {
@@ -1568,7 +1568,7 @@
 								data.filter === data.exact;
 						} else if ( typeof fxn === 'function' ) {
 							// filter callback( exact cell content, parser normalized content,
-							// filter input value, column index, jQuery row object )
+							// filter input value, column code, jQuery row object )
 							filterMatched = fxn( data.exact, data.cache, data.filter, columnIndex, data.$row, c, data );
 						} else if ( typeof fxn[ ffxn || data.filter ] === 'function' ) {
 							// selector option function
@@ -1691,7 +1691,7 @@
 							for ( indx = 0; indx < query.length; indx++ ) {
 								res = query[ indx ].split( ':' );
 								if ( res.length > 1 ) {
-									// make the column a one-based index ( non-developers start counting from one :P )
+									// make the column a one-based code ( non-developers start counting from one :P )
 									id = parseInt( res[0], 10 ) - 1;
 									if ( id >= 0 && id < c.columns ) { // if id is an integer
 										filters[ id ] = res[1];
@@ -2531,9 +2531,9 @@
 			'body.' + ts.css.resizableNoSelect + ' { -ms-user-select: none; -moz-user-select: -moz-none;' +
 				'-khtml-user-select: none; -webkit-user-select: none; user-select: none; }' +
 			'.' + ts.css.resizableContainer + ' { position: relative; height: 1px; }' +
-			// make handle z-index > than stickyHeader z-index, so the handle stays above sticky header
+			// make handle z-code > than stickyHeader z-code, so the handle stays above sticky header
 			'.' + ts.css.resizableHandle + ' { position: absolute; display: inline-block; width: 8px;' +
-				'top: 1px; cursor: ew-resize; z-index: 3; user-select: none; -moz-user-select: none; }' +
+				'top: 1px; cursor: ew-resize; z-code: 3; user-select: none; -moz-user-select: none; }' +
 			'</style>';
 		$(s).appendTo('body');
 	});

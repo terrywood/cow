@@ -4,6 +4,7 @@ import app.entity.Fish;
 import app.repository.FishRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,63 +18,67 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-/**
- * Created by terry.wu on 2016/4/12 0012.
- */
 @Service
 public class FishService implements InitializingBean{
     private static final Logger log = LoggerFactory.getLogger(FishService.class);
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-    private Map<String,String> map = new HashMap() ;
-
+    private  Map<String,String> map = new HashMap<String,String>() ;
+//http://api.money.126.net/data/feed/0000001,1399006,1399005,1399395,1399967,1399975,money.api
     @Autowired
     private FishRepository fishRepository;
-    private String userAgent ="Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36";
+    private static String userAgent ="Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36";
+
+
     @Override
     public void afterPropertiesSet() throws Exception {
             map. put("上证", "000001");
+            map. put("中小板", "399005");
             map. put("创业板", "399006");
             map. put("国证有色", "399395");
             map. put("中证军工", "399967");
             map. put("证券公司", "399975");
-
-           process();
     }
 
+    public List<Fish> getByDay(String day) throws ParseException, IOException {
+        Date  day2 = sdf.parse(day);
+        List list = fishRepository.findByDate(day2);
+        if(list.size()>0){
+            return  list;
+        }
+
+        String wei = sdf.format(DateUtils.addDays(day2,-1));
+        String href  =  process(wei);
+        System.out.println(href);
+        if(href!=null){
+            list = post(href,day2);
+            fishRepository.save(list);
+            return  list ;
+        }else{
+            return  null;
+        }
+
+    }
 
     String site = "http://chuansong.me/account/gushequ";
-    public void process() throws IOException {
+    public String process(String day) throws IOException {
         Document doc = Jsoup.connect(site)
                 .userAgent(userAgent)
+                //.data("start",start)
                 .get();
         Elements elements = doc.getElementsByClass("pagedlist_item");
-
         for(Element element : elements){
             Element link =   element.getElementsByClass("question_link").get(0);
             Element date =  link.nextElementSibling();
             String href =link.attr("href");
-            System.out.println(href);
-            try {
-                post(href,date.text());
-                System.out.println("---------------------------------");
-            }catch (IOException e){
-                System.out.println(e.getMessage());
-            } catch (ParseException e) {
-                e.printStackTrace();
+            if(day.equals(date.text())){
+                return href;
             }
-
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
         }
+        return null;
     }
 
     public Fish matchBean(String html){
@@ -95,27 +100,27 @@ public class FishService implements InitializingBean{
         return  null;
     }
 
-    public void post(String sub,String date) throws IOException, ParseException {
+    public List<Fish> post(String sub, Date day2) throws IOException, ParseException {
+
+        List<Fish> list = new ArrayList<>();
         Document doc = Jsoup.connect("http://chuansong.me"+sub)
                 .userAgent(userAgent)
                 .timeout(100000)
                 .get();
-
         Element element = doc.getElementById("js_content");
         Elements _p =element.getElementsByTag("p");
         for(Element p : _p){
             if(p.hasAttr("style")){
                 Fish fish = matchBean(StringUtils.trim(p.text()));
                 if(fish!=null){
-                    fish.setDate(sdf.parse(date));
-                    fish.setId(date+"-"+fish.getIndex());
-                    this.fishRepository.save(fish);
-                    System.out.println(fish);
+                    fish.setDate(day2);
+                    fish.setId(fish.getSymbol()+day2.getTime());
+                    list.add(fish);
                 }
             }
         }
 
-
+       return   list;
     }
 
 
