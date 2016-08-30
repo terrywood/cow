@@ -1,6 +1,6 @@
 package app;
 
-import app.service.StockListService;
+import app.service.FishService;
 import app.service.TraderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ public class Application {
     @Autowired
     TraderService traderService;
     @Autowired
-    StockListService stockListService;
+    FishService fishService;
 
     public static void main(String[] args) throws Exception {
         SpringApplication.run(Application.class);
@@ -69,7 +69,11 @@ public class Application {
     @Bean
     public CommandLineRunner initData() {
         return (args) -> {
-            System.out.println();
+            System.out.println("init data  -------------------");
+         /*   for(int i=0;i<216;i = i+12){
+                fishService.save2db(String.valueOf(i));
+            }
+*/
         };
     }
 }

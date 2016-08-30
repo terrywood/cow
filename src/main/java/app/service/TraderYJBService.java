@@ -66,10 +66,11 @@ public class TraderYJBService implements TraderService, InitializingBean {
         this.cookieStore = new BasicCookieStore();
         //guo jin
         this.entity = traderSessionService.findOne("40128457");
-      //  login();
-        if (holidayService.isTradeDayTimeByMarket()) {
+
+
+       /* if (holidayService.isTradeDayTimeByMarket()) {
             cornJob();
-        }
+        }*/
     }
 
     //@Scheduled(cron = "0/30 * 9-16 * * MON-FRI")

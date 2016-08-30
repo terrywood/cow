@@ -31,7 +31,7 @@ public class FishService implements InitializingBean{
     @Autowired
     private FishRepository fishRepository;
     private static String userAgent ="Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36";
-
+    private static String site = "http://chuansong.me/account/gushequ";
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -49,7 +49,6 @@ public class FishService implements InitializingBean{
         if(list.size()>0){
             return  list;
         }
-
         String wei = sdf.format(DateUtils.addDays(day2,-1));
         String href  =  process(wei);
         System.out.println(href);
@@ -63,11 +62,43 @@ public class FishService implements InitializingBean{
 
     }
 
-    String site = "http://chuansong.me/account/gushequ";
+    public void save2db(String start)  {
+        Document doc = null;
+        try {
+            doc = Jsoup.connect(site).userAgent(userAgent).data("start",start) .get();
+            Elements elements = doc.getElementsByClass("pagedlist_item");
+            for(Element element : elements){
+                Element link =   element.getElementsByClass("question_link").get(0);
+                Element date =  link.nextElementSibling();
+                String href =link.attr("href");
+                Date  day2 = sdf.parse(date.text());
+                Date day = DateUtils.addDays(day2,1);
+
+                List<Fish> l = fishRepository.findByDate(day);
+                if(l.size()>0){
+                    continue;
+                }
+
+                List<Fish>  list = post(href,day);
+                fishRepository.save(list);
+
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public String process(String day) throws IOException {
         Document doc = Jsoup.connect(site)
                 .userAgent(userAgent)
-                //.data("start",start)
                 .get();
         Elements elements = doc.getElementsByClass("pagedlist_item");
         for(Element element : elements){
@@ -124,5 +155,8 @@ public class FishService implements InitializingBean{
     }
 
 
+    public List<Fish> findBySymbol(String symbol){
+        return  fishRepository.findBySymbol(symbol);
+    }
 
 }

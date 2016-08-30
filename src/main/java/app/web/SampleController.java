@@ -18,6 +18,7 @@ package app.web;
 
 
 import app.bean.IFengDayResult;
+import app.bean.WeiCard;
 import app.entity.AccountDaily;
 import app.entity.AccountData;
 import app.entity.Fish;
@@ -37,6 +38,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
 import java.net.URL;
@@ -79,17 +81,8 @@ public class SampleController {
         return "detail";
     }
 
-    @RequestMapping("/")
-    public String index(Map<String, Object> model,
-                        @RequestParam(required = false,name = "day") String day) throws IOException, ParseException {
-        // String day ="2016-08-12";
-
-        if (StringUtils.isBlank(day)) {
-            day = DateFormatUtils.format(new Date(), "yyyy-MM-dd");
-        }
-        List<Fish> fishList = fishService.getByDay(day);
-        model.put("fishList", fishList);
-        model.put("day", day);
+    @RequestMapping("/28")
+    public String tow8(Model model) throws ParseException, IOException {
         URL url = new URL("http://api.finance.ifeng.com/akdaily/?code=sz159915&type=last");
         URL url2 = new URL("http://api.finance.ifeng.com/akdaily/?code=sh518880&type=last");
         IFengDayResult cy = objectMapper.readValue(url, IFengDayResult.class);
@@ -110,11 +103,8 @@ public class SampleController {
         double x2 = (cybPrice - cyb) / cyb;
         double x8 = (hjPrice - hj) / hj;
         String desc = null;
-/*
-        System.out.println("创业板当前价["+cybPrice+"] 黄金当前价["+hjPrice+"] ");
-        System.out.println("创业板涨幅["+x2+"] 黄金涨幅["+x8+"] ");
-        System.out.println("------------------------------------");*/
-        if (x2 > 0 && x8 > 0) {
+
+        if (x2 > 0d && x8 > 0d) {
             if (x2 > x8) {
                 desc = ("持有创业板159915");
             } else {
@@ -124,11 +114,44 @@ public class SampleController {
             desc = ("卖出逆回购204001!");
         }
         desc += " [创业板:" + String.format("%1$.2f", x2) + "  黄金:" + String.format("%1$.2f", x8) + "]";
-        model.put("sh518880", hjPrice);
-        model.put("sz159915", cybPrice);
-        model.put("desc28", desc);
+        model.addAttribute("sh518880", hjPrice);
+        model.addAttribute("sz159915", cybPrice);
+        model.addAttribute("desc28", desc);
         return "index";
     }
+
+    @RequestMapping("/")
+    public String index(Map<String, Object> model,
+                        @RequestParam(required = false,name = "day") String day) throws IOException, ParseException {
+        if (StringUtils.isBlank(day)) {
+            day = DateFormatUtils.format(new Date(), "yyyy-MM-dd");
+        }
+        List<Fish> fishList = fishService.getByDay(day);
+        model.put("fishList", fishList);
+        model.put("day", day);
+
+        URL url = new URL("http://api.weibo.cn/2/page?networktype=wifi&extparam=%E7%BE%8A%E5%9C%88%E6%A8%A1%E5%9E%8B&uicode=10000011&page_id=100808c89f05c71c753fc25d508164539f9303&moduleID=708&featurecode=10000326&lcardid=1076031544062044_-_WEIBO_SECOND_PROFILE_WEIBO_-_4014185464196586&c=android&i=316edc2&s=f49b6925&ua=Xiaomi-MI%204LTE__weibo__6.9.0__android__android6.0.1&wm=20005_0002&aid=01AoDdYa_V9Uir8wj8z6HrKHAAPDu0R7zoiPQRCQtvtSZSoYg.&fid=100808c89f05c71c753fc25d508164539f9303&mid=4014185464196586&v_f=2&v_p=34&from=1069095010&gsid=_2A256wVofDeTxGeRG7VQW9i3IwzyIHXVX1-rXrDV6PUJbrdANLXWnkWodlDKwJJPmuobskExR5tFafu_ShA..&imsi=460000031690924&lang=zh_CN&lfid=1076031544062044_-_WEIBO_SECOND_PROFILE_WEIBO&page=1&skin=default&count=20&oldwm=20005_0002&sflag=1&containerid=100808c89f05c71c753fc25d508164539f9303&luicode=10000198");
+        WeiCard obj = objectMapper.readValue(url, WeiCard.class);
+        model.put("weiList",obj.getList());
+
+        return "index";
+    }
+    @RequestMapping("/fish")
+    public String fish(Model model) throws IOException, ParseException {
+
+        return "fishChart";
+    }
+
+    @ResponseBody
+    @RequestMapping("/jsonp")
+    public String jsonp(Model model,
+                       @RequestParam(required = false,name = "f") String f
+    ) throws IOException, ParseException {
+        this.fishService.findBySymbol("000001");
+        return "fishChart";
+    }
+
+
 
 
 }
