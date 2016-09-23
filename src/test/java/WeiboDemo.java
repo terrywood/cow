@@ -1,12 +1,24 @@
 import app.bean.WeiCard;
+import app.bean.WeiSheep;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.net.URL;
 import java.text.ParseException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class WeiboDemo {
 
+    String userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1";
+    BasicCookieStore cookieStore  = new BasicCookieStore();
 
     public static void main(String[] args) throws ParseException, IOException {
         WeiboDemo demo = new WeiboDemo();
@@ -24,11 +36,70 @@ public class WeiboDemo {
 
 
     public void login() throws ParseException, IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        //objectMapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
-        URL url = new URL("http://api.weibo.cn/2/page?networktype=wifi&extparam=%E7%BE%8A%E5%9C%88%E6%A8%A1%E5%9E%8B&uicode=10000011&page_id=100808c89f05c71c753fc25d508164539f9303&moduleID=708&featurecode=10000326&lcardid=1076031544062044_-_WEIBO_SECOND_PROFILE_WEIBO_-_4014185464196586&c=android&i=316edc2&s=f49b6925&ua=Xiaomi-MI%204LTE__weibo__6.9.0__android__android6.0.1&wm=20005_0002&aid=01AoDdYa_V9Uir8wj8z6HrKHAAPDu0R7zoiPQRCQtvtSZSoYg.&fid=100808c89f05c71c753fc25d508164539f9303&mid=4014185464196586&v_f=2&v_p=34&from=1069095010&gsid=_2A256wVofDeTxGeRG7VQW9i3IwzyIHXVX1-rXrDV6PUJbrdANLXWnkWodlDKwJJPmuobskExR5tFafu_ShA..&imsi=460000031690924&lang=zh_CN&lfid=1076031544062044_-_WEIBO_SECOND_PROFILE_WEIBO&page=1&skin=default&count=20&oldwm=20005_0002&sflag=1&containerid=100808c89f05c71c753fc25d508164539f9303&luicode=10000198");
-        WeiCard obj = objectMapper.readValue(url, WeiCard.class);
-        System.out.println(obj);
+        System.out.println("--------------------------------------------");
+        try {
+            long start = System.currentTimeMillis();
+            CloseableHttpClient httpclient = HttpClients.custom()
+                    .setDefaultCookieStore(cookieStore)
+                    .setUserAgent(userAgent)
+                    .build();
+            try {
+                HttpGet httpget3 = new HttpGet("http://m.weibo.cn/container/getIndex?containerid=100808c89f05c71c753fc25d508164539f9303");
+                httpget3.setHeader("Referer","http://m.weibo.cn/p/100808c89f05c71c753fc25d508164539f9303");
+                CloseableHttpResponse response3 = httpclient.execute(httpget3);
+                HttpEntity entity3 = response3.getEntity();
+                String content2 =EntityUtils.toString(entity3);
+                System.out.println(content2);
+                EntityUtils.consume(entity3);
+                ObjectMapper objectMapper = new ObjectMapper();
+                WeiCard obj = objectMapper.readValue(entity3.getContent(), WeiCard.class);
+                List<WeiSheep> ret = obj.getList();
+                Collections.sort(ret, new Comparator<WeiSheep>() {
+                    @Override
+                    public int compare(WeiSheep o1, WeiSheep o2) {
+                        return o2.getDate().compareTo(o1.getDate());
+                    }
+                });
+
+                System.out.println(obj);
+
+                /*
+                MyCheckCodeTool tool = new MyCheckCodeTool("guojin");
+                String code = tool.getCheckCode_from_image(image);
+                HttpUriRequest login = RequestBuilder.post()
+                        .setUri(new URI("https://jy.yongjinbao.com.cn/winner_gj/gjzq/exchange.action"))
+
+                        .build();
+
+                CloseableHttpResponse response2 = httpclient.execute(login);*/
+               /* try {
+                    HttpEntity entity = response2.getEntity();
+                    System.out.println("Login form get: " + response2.getStatusLine());
+                    String result = IOUtils.toString(entity.getContent(), "UTF-8");
+                    EntityUtils.consume(entity);
+                    System.out.println("result:" + result);
+                    System.out.println("Post logon cookies:");
+                    List<Cookie> cookies = cookieStore.getCookies();
+                    if (cookies.isEmpty()) {
+                        System.out.println("None");
+                    } else {
+                        for (int i = 0; i < cookies.size(); i++) {
+                            //cookieStore.addCookie(cookies.get(i));
+                            System.out.println("- " + cookies.get(i).toString());
+                        }
+                    }
+                } finally {
+                    response2.close();
+                }*/
+            } finally {
+                httpclient.close();
+            }
+
+        } catch (Exception e) {
+             e.printStackTrace();
+        }
+
+
 
     }
 

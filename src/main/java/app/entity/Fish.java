@@ -20,13 +20,24 @@ public class Fish {
     private Date date;
     private String work;
     private String edge;
+
     //private String code;
+
+    private String ticket;
     private String symbol;
+
 
     public Fish(String symbol, String name) {
         this.symbol = symbol;
         this.name = name;
     }
+    public Fish(String symbol, String name,String ticket) {
+        this.symbol = symbol;
+        this.name = name;
+        this.ticket =ticket;
+    }
+
     public Fish() {
+
     }
 }

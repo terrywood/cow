@@ -23,7 +23,7 @@
 		var seriesOptions = [],
 				seriesCounter = 0,
 				//names = ['MSFT', 'AAPL', 'GOOG'];
-				names = ['Fish'];
+				names = ['GuDong','Price'];
 
 		/**
 		 * Create the chart when all data is loaded
@@ -36,7 +36,14 @@
 				rangeSelector: {
 					selected: 4
 				},
+				xAxis: {
+					labels: {
+						formatter: function() {
 
+							return  Highcharts.dateFormat('%Y-%m-%d', this.value);
+						}
+					}
+				},
 				yAxis: {
 					labels: {
 						formatter: function () {
@@ -57,6 +64,7 @@
 				},
 
 				tooltip: {
+					xDateFormat: '%Y-%m-%d',
 					pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
 					valueDecimals: 2
 				},
@@ -66,22 +74,20 @@
 		}
 
 		$.each(names, function (i, name) {
-
-			$.getJSON('jsonp?f=' + name.toLowerCase() + '&callback=?',    function (data) {
-
+			$.ajaxSettings.async = false;
+			$.getJSON( name.toLowerCase()+'?code=${param.code}', function(json){
 				seriesOptions[i] = {
 					name: name,
-					data: data
+					data: json
 				};
-
-				// As we're loading the data asynchronously, we don't know what order it will arrive. So
-				// we keep a counter and create the chart when all the data is loaded.
 				seriesCounter += 1;
-
 				if (seriesCounter === names.length) {
+					// As we're loading the data asynchronously, we don't know what order it will arrive. So
+					// we keep a counter and create the chart when all the data is loaded.
 					createChart();
 				}
 			});
+			$.ajaxSettings.async = true;
 		});
 	});
 

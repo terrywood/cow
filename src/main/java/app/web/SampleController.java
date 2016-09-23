@@ -17,13 +17,14 @@
 package app.web;
 
 
+import app.bean.ApiDayResult;
 import app.bean.IFengDayResult;
-import app.bean.WeiCard;
 import app.entity.AccountDaily;
 import app.entity.AccountData;
 import app.entity.Fish;
 import app.service.AccountService;
 import app.service.FishService;
+import app.service.SheepService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -32,21 +33,24 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.URL;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Controller
 public class SampleController {
@@ -56,6 +60,8 @@ public class SampleController {
     AccountService accountService;
     @Autowired
     ObjectMapper objectMapper;
+    @Autowired
+    SheepService sheepService;
 
     @RequestMapping("/accounts")
     public String accounts(/*
@@ -122,36 +128,96 @@ public class SampleController {
 
     @RequestMapping("/")
     public String index(Map<String, Object> model,
-                        @RequestParam(required = false,name = "day") String day) throws IOException, ParseException {
+                        @RequestParam(required = false, name = "day") String day) throws IOException, ParseException {
         if (StringUtils.isBlank(day)) {
             day = DateFormatUtils.format(new Date(), "yyyy-MM-dd");
         }
         List<Fish> fishList = fishService.getByDay(day);
         model.put("fishList", fishList);
         model.put("day", day);
-
-        URL url = new URL("http://api.weibo.cn/2/page?networktype=wifi&extparam=%E7%BE%8A%E5%9C%88%E6%A8%A1%E5%9E%8B&uicode=10000011&page_id=100808c89f05c71c753fc25d508164539f9303&moduleID=708&featurecode=10000326&lcardid=1076031544062044_-_WEIBO_SECOND_PROFILE_WEIBO_-_4014185464196586&c=android&i=316edc2&s=f49b6925&ua=Xiaomi-MI%204LTE__weibo__6.9.0__android__android6.0.1&wm=20005_0002&aid=01AoDdYa_V9Uir8wj8z6HrKHAAPDu0R7zoiPQRCQtvtSZSoYg.&fid=100808c89f05c71c753fc25d508164539f9303&mid=4014185464196586&v_f=2&v_p=34&from=1069095010&gsid=_2A256wVofDeTxGeRG7VQW9i3IwzyIHXVX1-rXrDV6PUJbrdANLXWnkWodlDKwJJPmuobskExR5tFafu_ShA..&imsi=460000031690924&lang=zh_CN&lfid=1076031544062044_-_WEIBO_SECOND_PROFILE_WEIBO&page=1&skin=default&count=20&oldwm=20005_0002&sflag=1&containerid=100808c89f05c71c753fc25d508164539f9303&luicode=10000198");
-        WeiCard obj = objectMapper.readValue(url, WeiCard.class);
-        model.put("weiList",obj.getList());
-
+        model.put("weiList", sheepService.get());
         return "index";
     }
+
     @RequestMapping("/fish")
     public String fish(Model model) throws IOException, ParseException {
 
         return "fishChart";
     }
 
-    @ResponseBody
-    @RequestMapping("/jsonp")
-    public String jsonp(Model model,
-                       @RequestParam(required = false,name = "f") String f
+    private static String userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36";
+    private static String site = "http://www.zhuoniugu.com/api.php";
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+
+    @RequestMapping("/gudong")
+    public ResponseEntity gudong(Model model,
+                               HttpSession httpSession,
+                               @RequestParam(required = false, name = "code", defaultValue = "002679") String code
     ) throws IOException, ParseException {
-        this.fishService.findBySymbol("000001");
-        return "fishChart";
+        List<Object[]> list = new ArrayList<>();
+
+
+            Document doc = null;
+            try {
+                doc = Jsoup.connect(site).userAgent(userAgent)
+                        .data("c", "hudong")
+                        .data("a", "gudong")
+                        .data("show", "html")
+                        .data("stock_id", code)
+                        .get();
+                Element element = doc.getElementsByAttributeValue("style", "text-align:center").get(2);
+                String raw[] = StringUtils.split(element.html(), "<br>");
+                for (int i=0;i<raw.length;i++) {
+                    String day = raw[i];
+                    String[] row = StringUtils.split(day.trim(), "|");
+                    Date startDate = sdf.parse(row[0].trim());
+                    if(i==raw.length-1){
+                        httpSession.setAttribute("startDate",startDate);
+                    }
+                    long time = startDate.getTime();
+                    Object[] data = new Object[]{time, Integer.valueOf(row[1].trim())};
+                    list.add(0, data);
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+
+        //String json2 = objectMapper.writeValueAsString(list);
+        return new ResponseEntity(list, HttpStatus.OK);
     }
 
 
+    @RequestMapping("/price")
+    public ResponseEntity price(Model model,
+                                 HttpSession httpSession,
+                                 @RequestParam(required = false, name = "code", defaultValue = "002679") String code
+    ) throws IOException, ParseException {
+        List<Object[]> list = new ArrayList<>();
+        String market = code.startsWith("6") ? "sh" : "sz";
+        try {
+            Date csvStartDate =(Date) httpSession.getAttribute("startDate");
+            URL url = new URL("http://api.finance.ifeng.com/akdaily/?code=" + market + code + "&type=last");
+            ApiDayResult result = objectMapper.readValue(url, ApiDayResult.class);
+            System.out.println(csvStartDate);
+            List<String[]> list2 = result.getRecord();
+            System.out.println(list2.size());
+            for (String[] args : list2) {
+                Date date = sdf.parse(args[0]);
+                if (date.after(csvStartDate)) {
+                    String price  = args[3];
+                    Object[] data = new Object[]{date.getTime(), Double.valueOf(price.trim())};
+                    list.add(data);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("can not get code[" + code + "] message:" + e.getMessage());
+            e.printStackTrace();
+        }
 
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
 
 }

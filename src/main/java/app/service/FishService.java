@@ -26,7 +26,7 @@ public class FishService implements InitializingBean{
 
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-    private  Map<String,String> map = new HashMap<String,String>() ;
+    private  Map<String,Fish> map = new HashMap<String,Fish>() ;
 //http://api.money.126.net/data/feed/0000001,1399006,1399005,1399395,1399967,1399975,money.api
     @Autowired
     private FishRepository fishRepository;
@@ -35,12 +35,12 @@ public class FishService implements InitializingBean{
 
     @Override
     public void afterPropertiesSet() throws Exception {
-            map. put("上证", "000001");
-            map. put("中小板", "399005");
-            map. put("创业板", "399006");
-            map. put("国证有色", "399395");
-            map. put("中证军工", "399967");
-            map. put("证券公司", "399975");
+            map. put("上证", new Fish("000001","上证","510300"));
+            map. put("中小板",new Fish( "399005","中小板","159902"));
+            map. put("创业板",new Fish("399006","创业板","159915"));
+            map. put("国证有色", new Fish("399395","国证有色","150197"));
+            map. put("中证军工", new Fish("399967","中证军工","512660"));
+            map. put("证券公司", new Fish("399975","证券公司","512880"));
     }
 
     public List<Fish> getByDay(String day) throws ParseException, IOException {
@@ -115,7 +115,7 @@ public class FishService implements InitializingBean{
     public Fish matchBean(String html){
         for(String key : map.keySet()){
             if(html.startsWith(key)){
-                Fish fish = new Fish(map.get(key), key);
+                Fish fish =map.get(key);
                 if (StringUtils.contains(html, "yes")) {
                     fish.setWork("y");
                 } else if (StringUtils.contains(html, "no")) {

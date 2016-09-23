@@ -29,13 +29,13 @@ public class WeiCardDeserializer  extends StdDeserializer<WeiCard> {
         JsonNode node = jp.getCodec().readTree(jp);
         JsonNode card = node.path("cards").get(5);
         JsonNode group = card.path("card_group");
-        List<WeiBo> list = new ArrayList<>();
+        List<WeiSheep> list = new ArrayList<>();
         for(JsonNode jsonNode : group ){
             JsonNode blog =jsonNode.path("mblog");
             String create = blog.path("created_at").asText();
             String text = blog.path("text").asText();
             //System.out.println("create->" + create +" text =>" +text);
-            WeiBo weiBo = new WeiBo();
+            WeiSheep weiBo = new WeiSheep();
             weiBo.setText(text.substring(0,3));
             try {
                 weiBo.setDate(sdf.parse(create));

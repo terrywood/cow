@@ -12,5 +12,5 @@ import java.util.List;
 @JsonDeserialize(using = WeiCardDeserializer.class)
 public class WeiCard {
     String  title;
-    List<WeiBo> list;
+    List<WeiSheep> list;
 }
