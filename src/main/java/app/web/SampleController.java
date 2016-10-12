@@ -18,6 +18,7 @@ package app.web;
 
 
 import app.bean.ApiDayResult;
+import app.bean.Gudong;
 import app.bean.IFengDayResult;
 import app.entity.AccountDaily;
 import app.entity.AccountData;
@@ -45,7 +46,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.URL;
 import java.text.ParseException;
@@ -150,46 +150,78 @@ public class SampleController {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 
-    @RequestMapping("/gudong")
-    public ResponseEntity gudong(Model model,
-                               HttpSession httpSession,
+    @RequestMapping("/guDong")
+    public String guDong(Model model,
                                @RequestParam(required = false, name = "code", defaultValue = "002679") String code
     ) throws IOException, ParseException {
-        List<Object[]> list = new ArrayList<>();
-
-
-            Document doc = null;
-            try {
-                doc = Jsoup.connect(site).userAgent(userAgent)
-                        .data("c", "hudong")
-                        .data("a", "gudong")
-                        .data("show", "html")
-                        .data("stock_id", code)
-                        .get();
-                Element element = doc.getElementsByAttributeValue("style", "text-align:center").get(2);
-                String raw[] = StringUtils.split(element.html(), "<br>");
-                for (int i=0;i<raw.length;i++) {
-                    String day = raw[i];
-                    String[] row = StringUtils.split(day.trim(), "|");
-                    Date startDate = sdf.parse(row[0].trim());
-                    if(i==raw.length-1){
-                        httpSession.setAttribute("startDate",startDate);
-                    }
-                    long time = startDate.getTime();
-                    Object[] data = new Object[]{time, Integer.valueOf(row[1].trim())};
-                    list.add(0, data);
-                }
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-
-
-        //String json2 = objectMapper.writeValueAsString(list);
-        return new ResponseEntity(list, HttpStatus.OK);
+        return "guDong";
     }
 
+    @RequestMapping("/guDongData")
+    public ResponseEntity guDongData(Model model,
+                               @RequestParam(required = false, name = "code", defaultValue = "002679") String code
+    ) throws IOException, ParseException {
+        Map<String ,Object> map = new HashMap<>();
+        List<Gudong> guDong = new ArrayList<>();
+        Document doc = null;
+        String market = code.startsWith("6") ? "sh" : "sz";
+        try {
+            doc = Jsoup.connect(site).userAgent(userAgent)
+                    .data("c", "hudong")
+                    .data("a", "gudong")
+                    .data("show", "html")
+                    .data("stock_id", code)
+                    .get();
+            Element element = doc.getElementsByAttributeValue("style", "text-align:center").get(2);
+            String raw[] = StringUtils.split(element.html(), "<br>");
+            for (int i=0;i<raw.length;i++) {
+                String day = raw[i];
+                String[] row = StringUtils.split(day.trim(), "|");
+                Date startDate = sdf.parse(row[0].trim());
+                guDong.add(new Gudong(startDate, Integer.valueOf(row[1].trim())));
+            }
 
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        List prices = new ArrayList<>();
+        List counts = new ArrayList<>();
+        List dates = new ArrayList<>();
+        try {
+            Date startDate =guDong.get(guDong.size()-1).getDate();
+            URL url = new URL("http://api.finance.ifeng.com/akdaily/?code=" + market + code + "&type=last");
+            ApiDayResult result = objectMapper.readValue(url, ApiDayResult.class);
+            System.out.println(startDate);
+            List<String[]> list2 = result.getRecord();
+            for (String[] args : list2) {
+                Date date = sdf.parse(args[0]);
+                if (date.after(startDate)) {
+                    prices.add(Double.valueOf(args[3].trim()));
+                    dates.add(sdf.format(date));
+                    for(Gudong entity : guDong){
+                        if(entity.getDate().equals(date) || date.after(entity.getDate())){
+                            counts.add(entity.getCount());
+                            break;
+                        }
+                    }
+
+                }
+            }
+            map.put("dates",dates);
+            map.put("counts",counts);
+            map.put("prices",prices);
+
+        } catch (Exception e) {
+            System.out.println("can not get code[" + code + "] message:" + e.getMessage());
+            e.printStackTrace();
+        }
+
+
+        return new ResponseEntity(map, HttpStatus.OK);
+    }
+
+/*
     @RequestMapping("/price")
     public ResponseEntity price(Model model,
                                  HttpSession httpSession,
@@ -218,6 +250,6 @@ public class SampleController {
         }
 
         return new ResponseEntity(list, HttpStatus.OK);
-    }
+    }*/
 
 }
