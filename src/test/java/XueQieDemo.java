@@ -1,35 +1,31 @@
-import app.bean.ApiDayResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class XueQieDemo {
-
-    ObjectMapper objectMapper = new ObjectMapper();
-    public static void main(String[] args) throws ParseException, IOException {
-        XueQieDemo demo = new XueQieDemo();
-        demo.login2();
-
-    }
-
     private static String userAgent ="Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36";
     private static String site = "http://www.zhuoniugu.com/api.php";
+    private ObjectMapper objectMapper = new ObjectMapper();
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    public static void main(String[] args) throws ParseException, IOException {
+        XueQieDemo demo = new XueQieDemo();
+        demo.login2("sh000001","sh000001");
+    }
 
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    public void login2() throws ParseException, IOException {
+    public void login2(String sinaCode,String ifengCode) throws ParseException, IOException {
+
+
+/*
+
         String code ="000850";
-
         List<Object[]> list = new ArrayList<>();
         String market = code.startsWith("6") ? "sh" : "sz";
         try {
@@ -49,7 +45,7 @@ public class XueQieDemo {
             System.out.println("can not get code[" + code + "] message:" + e.getMessage());
             e.printStackTrace();
         }
-        System.out.println(list);
+        System.out.println(list);*/
     }
     public void login() throws ParseException, IOException {
         Document doc = null;

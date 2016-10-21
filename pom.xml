@@ -136,7 +136,11 @@
             <systemPath>${project.basedir}/lib/yjb_verify_code.jar</systemPath>
         </dependency>
 
-
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.4</version>
+        </dependency>
 
         <dependency>
             <!-- jsoup HTML parser library @ http://jsoup.org/ -->
